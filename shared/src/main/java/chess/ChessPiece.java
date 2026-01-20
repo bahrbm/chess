@@ -1,5 +1,7 @@
 package chess;
 
+import chess.Pieces.*;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -12,8 +14,8 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor pieceColor;
-    private PieceType type;
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -55,12 +57,33 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
-        MoveCalc calc = new MoveCalc(board, myPosition);
-        return calc.findMoves();
-//        if (piece.getPieceType() == PieceType.BISHOP) {
-//            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8),null));
+
+        if(type == PieceType.KING){
+            MoveCalc moves = new King(board, myPosition);
+            return moves.findMoves();
+        }
+//        if(type == PieceType.PAWN){
+//            MoveCalc moves = new Pawn(board, myPosition);
+//            return moves.findMoves();
 //        }
-//        return List.of();
+//        else{
+//            return List.of();
+//        }
+//        else if(type == PieceType.QUEEN){
+//            MoveCalc moves = new Queen(board, myPosition);
+//            return moves.findMoves();
+//        }
+//        else if(type == PieceType.ROOK){
+//            MoveCalc moves = new Rook(board, myPosition);
+//            return moves.findMoves();
+//        }
+//        else if(type == PieceType.KNIGHT)
+//        MoveCalc calc = new MoveCalc(board, myPosition);
+//        return calc.findMoves();
+        if (piece.getPieceType() == PieceType.BISHOP) {
+            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8),null));
+        }
+        return List.of();
     }
 
     @Override
