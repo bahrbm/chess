@@ -3,6 +3,7 @@ package chess.Pieces;
 import chess.*;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class Bishop implements MoveCalc{
@@ -135,7 +136,6 @@ public class Bishop implements MoveCalc{
                 }
             }
         }
-
         return validMoves;
     }
 }

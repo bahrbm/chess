@@ -3,7 +3,6 @@ package chess;
 import chess.Pieces.*;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -56,8 +55,6 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessPiece piece = board.getPiece(myPosition);
-
         if (type == PieceType.KING) {
             MoveCalc moves = new King(board, myPosition);
             return moves.findMoves();
