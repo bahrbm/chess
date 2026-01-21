@@ -58,36 +58,25 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
 
-        if(type == PieceType.KING){
+        if (type == PieceType.KING) {
             MoveCalc moves = new King(board, myPosition);
             return moves.findMoves();
-        }
-        else if(type == PieceType.BISHOP){
+        } else if (type == PieceType.BISHOP) {
             MoveCalc moves = new Bishop(board, myPosition);
             return moves.findMoves();
+        } else if (type == PieceType.ROOK) {
+            MoveCalc moves = new Rook(board, myPosition);
+            return moves.findMoves();
+        } else if (type == PieceType.KNIGHT) {
+            MoveCalc moves = new Knight(board, myPosition);
+            return moves.findMoves();
+        } else if (type == PieceType.PAWN) {
+            MoveCalc moves = new Pawn(board, myPosition);
+            return moves.findMoves();
+        } else {
+            MoveCalc moves = new Queen(board, myPosition);
+            return moves.findMoves();
         }
-//        if(type == PieceType.PAWN){
-//            MoveCalc moves = new Pawn(board, myPosition);
-//            return moves.findMoves();
-//        }
-//        else{
-//            return List.of();
-//        }
-//        else if(type == PieceType.QUEEN){
-//            MoveCalc moves = new Queen(board, myPosition);
-//            return moves.findMoves();
-//        }
-//        else if(type == PieceType.ROOK){
-//            MoveCalc moves = new Rook(board, myPosition);
-//            return moves.findMoves();
-//        }
-//        else if(type == PieceType.KNIGHT)
-//        MoveCalc calc = new MoveCalc(board, myPosition);
-//        return calc.findMoves();
-        if (piece.getPieceType() == PieceType.BISHOP) {
-            return List.of(new ChessMove(new ChessPosition(5,4), new ChessPosition(1,8),null));
-        }
-        return List.of();
     }
 
     @Override

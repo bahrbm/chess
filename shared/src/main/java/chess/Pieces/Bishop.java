@@ -64,6 +64,7 @@ public class Bishop implements MoveCalc{
                         validMoves.removeAll(botMoves);
                         // Then we add the capture to the collection of valid moves
                         validMoves.add(new ChessMove(startPosition,botPos,null));
+                        botMoves.add(new ChessMove(startPosition,botPos,null));
                     }
                     else{
                         // If there is a piece and it's our teams, then we just remove all previous botMoves
@@ -83,6 +84,7 @@ public class Bishop implements MoveCalc{
                         validMoves.removeAll(topMoves);
                         // Then we add the capture to the collection of valid moves
                         validMoves.add(new ChessMove(startPosition,topPos,null));
+                        topMoves.add(new ChessMove(startPosition,topPos,null));
                     }
                     else{
                         // If there is our team's piece, then we just remove all previous topMoves
