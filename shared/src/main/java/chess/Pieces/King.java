@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class King implements MoveCalc{
     private final ChessPosition startPosition;
     private final ChessBoard board;
-    private Collection<ChessMove> validMoves = new LinkedList<>();
+    private final Collection<ChessMove> validMoves = new LinkedList<>();
 
     public King( ChessBoard board, ChessPosition startPosition) {
         this.startPosition = startPosition;

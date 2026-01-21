@@ -62,6 +62,10 @@ public class ChessPiece {
             MoveCalc moves = new King(board, myPosition);
             return moves.findMoves();
         }
+        else if(type == PieceType.BISHOP){
+            MoveCalc moves = new Bishop(board, myPosition);
+            return moves.findMoves();
+        }
 //        if(type == PieceType.PAWN){
 //            MoveCalc moves = new Pawn(board, myPosition);
 //            return moves.findMoves();
