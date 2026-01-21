@@ -3,7 +3,6 @@ package chess.Pieces;
 import chess.*;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 public class Knight implements MoveCalc{
     private final ChessBoard board;
@@ -22,9 +21,13 @@ public class Knight implements MoveCalc{
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
 
-        // Create Position objects
+        // Create Position objects(All eight if statements are the same logically. They just check different positions.
+
+        // Check if the position I'm trying to go to is inside the chess board
         if(row+2 > 0 && row+2 < 9 && col+1 > 0 && col+1 < 9){
             ChessPosition currPos = new ChessPosition(row+2,col+1);
+
+            // Add the move if there isn't a piece in the end position or if you can capture the piece that's there.
             if(board.getPiece(currPos)==null || board.getPiece(currPos).getTeamColor() != myPiece.getTeamColor()){
                 validMoves.add(new ChessMove(startPosition,currPos,null));
             }
