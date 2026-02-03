@@ -21,7 +21,7 @@ public class Knight implements MoveCalc{
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
 
-        // Create Position objects(All eight if statements are the same logically. They just check different positions.
+        // Create Position objects(All eight if statements are the same logically. They just check different positions.)
 
         // Check if the position I'm trying to go to is inside the chess board
         if(row+2 > 0 && row+2 < 9 && col+1 > 0 && col+1 < 9){
