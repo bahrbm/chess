@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -52,7 +53,23 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+
+        // First check if there is a piece at startPosition
+        if(board.getPiece(startPosition)==null){
+            return null;
+        }
+
+        ChessPiece currPiece = board.getPiece(startPosition);
+
+        // Next we need to see if the team is in check or not
+        if(isInCheck(currPiece.getTeamColor())){
+            // TODO implement way to get rid of moves if the team is in check
+            return List.of();
+        }
+        else{
+            return currPiece.pieceMoves(board,startPosition);
+        }
+
     }
 
     /**
