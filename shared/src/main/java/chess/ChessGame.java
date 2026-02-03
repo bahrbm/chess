@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Objects;
 
 /**
@@ -71,7 +72,41 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        // Loop through the board to check the pieces at each position
+        for(int i = 1; i < 9; i++){
+            for(int j = 1; j < 9; j++){
+
+                ChessPosition currPos = new ChessPosition(i,j);
+
+                // Check if there is a piece in the current position we are considering or if the piece is on my team
+                if(board.getPiece(currPos)==null || board.getPiece(currPos).getTeamColor() == teamColor){
+                    continue;
+                }
+
+                ChessPiece currPiece = board.getPiece(currPos);
+
+                Collection<ChessMove> currMoves;
+                currMoves = currPiece.pieceMoves(board,currPos);
+
+                // Go through each move and check if my king is in the end position of any of the possible moves
+                for(ChessMove move : currMoves){
+
+                    // First we need to check if there is a piece in the end position
+                    if(board.getPiece(move.getEndPosition())==null){
+                        continue;
+                    }
+
+                    // If there is a piece in the end position, check if it is a king
+                    if(board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        // If you didn't find a piece that puts this team in check, return false
+        return false;
     }
 
     /**
