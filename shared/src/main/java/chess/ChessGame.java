@@ -2,7 +2,6 @@ package chess;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -11,7 +10,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable{
 
     private ChessGame.TeamColor currTurn;
     private ChessBoard board = new ChessBoard();
@@ -35,6 +34,22 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         currTurn = team;
+    }
+
+    @Override
+    public ChessGame clone() {
+        try {
+            // Make a shallow copy
+            ChessGame clone = (ChessGame) super.clone();
+
+            // Need to make a deep copy of the board as it is mutable
+            ChessBoard clonedBoard = (ChessBoard) getBoard().clone();
+            clone.setBoard(clonedBoard);
+            return clone;
+
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     /**
@@ -61,15 +76,22 @@ public class ChessGame {
 
         ChessPiece currPiece = board.getPiece(startPosition);
 
-        // Next we need to see if the team is in check or not
-        if(isInCheck(currPiece.getTeamColor())){
-            // TODO implement way to get rid of moves if the team is in check
-            return List.of();
-        }
-        else{
-            return currPiece.pieceMoves(board,startPosition);
+        // Get all the possible moves that the piece can make
+        Collection<ChessMove> allMoves = currPiece.pieceMoves(board,startPosition);
+        Collection<ChessMove> validMoves = new LinkedList<>();
+
+        // Now we need to loop through all the moves and get rid of any that put our king in check
+        for(ChessMove move : allMoves){
+            boolean check = checkMove(move);
+            System.out.println(move);
+            System.out.println(check);
+            // Add the move to the list of valid moves if my King is not in check by the end of the turn
+            if(!check){
+                validMoves.add(move);
+            }
         }
 
+        return validMoves;
     }
 
     /**
@@ -79,7 +101,82 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
+        // Get all the needed information about the move
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece.PieceType promotionPieceType = move.getPromotionPiece();
+        ChessPiece currPiece = board.getPiece(startPosition);
+
+        // Initial Error Handling
+        if(board.getPiece(startPosition) == null){
+            // Check if the player is trying to move a piece
+            throw new InvalidMoveException();
+        }
+
+        ChessGame.TeamColor currTeam = currPiece.getTeamColor();
+
+        if(currTeam != currTurn){
+            // Check if the player is attempting to move out of turn
+            throw new InvalidMoveException();
+        }
+
+        // We need to get a Collection of all moves that the piece can make
+        Collection<ChessMove> moves = currPiece.pieceMoves(board,startPosition);
+
+        // If the current move that the user is trying to make isn't a move that piece can make, throw an error
+        if(!moves.contains(move)){
+            throw new InvalidMoveException();
+        }
+
+        // Before Making the move, check if it will leave you in check
+
+        // Check if the move involves promoting a pawn
+        if(move.getPromotionPiece()!=null){
+            ChessPiece promotionPiece = new ChessPiece(currTeam,promotionPieceType);
+
+            // Move the current Piece to the end position
+            board.addPiece(endPosition,promotionPiece);
+        }
+        else{
+            // Move the current Piece to the end position
+            board.addPiece(endPosition,currPiece);
+        }
+
+        // At the end of the move we need to remove the current piece from the starting position
+        board.removePiece(startPosition);
+
+        // Then we update whose turn it is
+        if(currTurn == TeamColor.WHITE){
+            currTurn = TeamColor.BLACK;
+        }
+        else{
+            currTurn = TeamColor.WHITE;
+        }
+    }
+
+    boolean checkMove(ChessMove move){
+
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece myPiece = board.getPiece(startPosition);
+        TeamColor currTeam = board.getPiece(startPosition).getTeamColor();
+
+        // Create a clone of the board to revert back to
+        ChessBoard tempBoard = board.clone();
+
+        // Make the Move
+        board.addPiece(endPosition, myPiece);
+        board.removePiece(endPosition);
+
+        // See if making this move puts my King in Check
+        boolean check = isInCheck(currTeam);
+
+        // Revert the board to its previous state
+        board = tempBoard;
+
+        // Return check
+        return check;
     }
 
     /**

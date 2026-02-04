@@ -25,8 +25,8 @@ public class Rook implements MoveCalc {
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
 
-        LinkedList<ChessMove> botMoves = new LinkedList<>();
-        LinkedList<ChessMove> leftMoves = new LinkedList<>();
+        Collection<ChessMove> botMoves = new LinkedList<>();
+        Collection<ChessMove> leftMoves = new LinkedList<>();
         boolean topPieceFound = false;
         boolean rightPieceFound = false;
 
@@ -55,6 +55,7 @@ public class Rook implements MoveCalc {
                         // If there is a piece and it's the other team, capture and delete all moves below
                         else if(board.getPiece(currPos).getTeamColor() != myPiece.getTeamColor()){
                             ChessMove move = new ChessMove(startPosition, currPos, null);
+                            validMoves.removeAll(botMoves);
                             validMoves.add(move);
                             botMoves.add(move);
                         }
@@ -98,6 +99,7 @@ public class Rook implements MoveCalc {
                 // If there is a piece and it's the other team, capture and delete all moves above
                 else if(board.getPiece(currPos).getTeamColor() != myPiece.getTeamColor()){
                     ChessMove move = new ChessMove(startPosition, currPos, null);
+                    validMoves.removeAll(leftMoves);
                     validMoves.add(move);
                     leftMoves.add(move);
                 }
