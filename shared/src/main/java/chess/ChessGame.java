@@ -43,7 +43,7 @@ public class ChessGame implements Cloneable{
             ChessGame clone = (ChessGame) super.clone();
 
             // Need to make a deep copy of the board as it is mutable
-            ChessBoard clonedBoard = (ChessBoard) getBoard().clone();
+            ChessBoard clonedBoard = getBoard().clone();
             clone.setBoard(clonedBoard);
             return clone;
 
@@ -230,7 +230,40 @@ public class ChessGame implements Cloneable{
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        // First we need to see if the current team is in check
+        if(!isInCheck(teamColor)){
+            return false;
+        }
+
+        // Now we need to loop through all possible moves that the team can make to see if it can get the king out of check
+        for(int i = 1; i < 9; i++){
+            for(int j = 1; j < 9; j++){
+
+                ChessPosition currPos = new ChessPosition(i,j);
+
+                // Skip if there isn't a piece in the current position
+                if(board.getPiece(currPos)==null){
+                    continue;
+                }
+
+                // Skip if the piece is on the other team
+                if(board.getPiece(currPos).getTeamColor()!=teamColor){
+                    continue;
+                }
+
+                // Get the moves that the piece can make
+                Collection<ChessMove> potentialMoves = validMoves(currPos);
+
+                // If there is a move, return false
+                if(!potentialMoves.isEmpty()){
+                    return false;
+                }
+            }
+        }
+
+        // if you go through all the pieces and there aren't any moves available, return true
+        return true;
     }
 
     /**
