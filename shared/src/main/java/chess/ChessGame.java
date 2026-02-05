@@ -119,15 +119,13 @@ public class ChessGame implements Cloneable{
             throw new InvalidMoveException();
         }
 
-        // We need to get a Collection of all moves that the piece can make
-        Collection<ChessMove> moves = currPiece.pieceMoves(board,startPosition);
+        // Get a Collection of all valid moves that the piece can make
+        Collection<ChessMove> moves = validMoves(startPosition);
 
         // If the current move that the user is trying to make isn't a move that piece can make, throw an error
         if(!moves.contains(move)){
             throw new InvalidMoveException();
         }
-
-        // Before Making the move, check if it will leave you in check
 
         // Check if the move involves promoting a pawn
         if(move.getPromotionPiece()!=null){
@@ -141,16 +139,10 @@ public class ChessGame implements Cloneable{
             board.addPiece(endPosition,currPiece);
         }
 
-        // At the end of the move we need to remove the current piece from the starting position
+        // At the end of the move we need to remove the current piece from the starting position and update whose turn it is
         board.removePiece(startPosition);
+        updateTurn();
 
-        // Then we update whose turn it is
-        if(currTurn == TeamColor.WHITE){
-            currTurn = TeamColor.BLACK;
-        }
-        else{
-            currTurn = TeamColor.WHITE;
-        }
     }
 
     boolean checkMove(ChessMove move){
@@ -176,6 +168,15 @@ public class ChessGame implements Cloneable{
 
         // Return check
         return check;
+    }
+
+    void updateTurn(){
+        if(currTurn == TeamColor.WHITE){
+            currTurn = TeamColor.BLACK;
+        }
+        else{
+            currTurn = TeamColor.WHITE;
+        }
     }
 
     /**
