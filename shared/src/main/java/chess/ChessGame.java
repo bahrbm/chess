@@ -83,8 +83,6 @@ public class ChessGame implements Cloneable{
         // Now we need to loop through all the moves and get rid of any that put our king in check
         for(ChessMove move : allMoves){
             boolean check = checkMove(move);
-            System.out.println(move);
-            System.out.println(check);
             // Add the move to the list of valid moves if my King is not in check by the end of the turn
             if(!check){
                 validMoves.add(move);
@@ -167,8 +165,9 @@ public class ChessGame implements Cloneable{
 
         // Make the Move
         board.addPiece(endPosition, myPiece);
-        board.removePiece(endPosition);
+        board.removePiece(startPosition);
 
+        // System.out.println(board);
         // See if making this move puts my King in Check
         boolean check = isInCheck(currTeam);
 
