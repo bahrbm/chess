@@ -123,16 +123,17 @@ public class ChessBoard implements Cloneable{
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                squares[7][0] + "|" + squares[7][1] + "|" + squares[7][2] + "|" + squares[7][3] + "|" + squares[7][4] + "|" + squares[7][5] + "|" + squares[7][6] + "|" + squares[7][7] + "\n" +
-                squares[6][0] + "|" + squares[6][1] + "|" + squares[6][2] + "|" + squares[6][3] + "|" + squares[6][4] + "|" + squares[6][5] + "|" + squares[6][6] + "|" + squares[6][7] + "\n" +
-                squares[5][0] + "|" + squares[5][1] + "|" + squares[5][2] + "|" + squares[5][3] + "|" + squares[5][4] + "|" + squares[5][5] + "|" + squares[5][6] + "|" + squares[5][7] + "\n" +
-                squares[4][0] + "|" + squares[4][1] + "|" + squares[4][2] + "|" + squares[4][3] + "|" + squares[4][4] + "|" + squares[4][5] + "|" + squares[4][6] + "|" + squares[4][7] + "\n" +
-                squares[3][0] + "|" + squares[3][1] + "|" + squares[3][2] + "|" + squares[3][3] + "|" + squares[3][4] + "|" + squares[3][5] + "|" + squares[3][6] + "|" + squares[3][7] + "\n" +
-                squares[2][0] + "|" + squares[2][1] + "|" + squares[2][2] + "|" + squares[2][3] + "|" + squares[2][4] + "|" + squares[2][5] + "|" + squares[2][6] + "|" + squares[2][7] + "\n" +
-                squares[1][0] + "|" + squares[1][1] + "|" + squares[1][2] + "|" + squares[1][3] + "|" + squares[1][4] + "|" + squares[1][5] + "|" + squares[1][6] + "|" + squares[1][7] + "\n" +
-                squares[0][0] + "|" + squares[0][1] + "|" + squares[0][2] + "|" + squares[0][3] + "|" + squares[0][4] + "|" + squares[0][5] + "|" + squares[0][6] + "|" + squares[0][7] + "\n" +
-                '}';
+        String returnString = "ChessBoard{";
+
+        for(int i = 7; i > -1;i--){
+            for(int j = 7; j > -1;j--){
+                returnString = returnString + squares[i][j];
+                if(j==7){
+                    returnString = returnString + "\n";
+                }
+            }
+        }
+        return returnString;
     }
 
     @Override
