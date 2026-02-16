@@ -56,28 +56,28 @@ public class ChessBoard implements Cloneable{
         // Create all the pieces that need to be placed
 
         // Create Pawns
-        ChessPiece b_pawn = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN);
-        ChessPiece w_pawn = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.PAWN);
+        ChessPiece blackPawn = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.PAWN);
+        ChessPiece whitePawn = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.PAWN);
 
         // Create Kings
-        ChessPiece b_king = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.KING);
-        ChessPiece w_king = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.KING);
+        ChessPiece blackKing = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.KING);
+        ChessPiece whiteKing = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.KING);
 
         // Create Queens
-        ChessPiece b_queen = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.QUEEN);
-        ChessPiece w_queen = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.QUEEN);
+        ChessPiece blackQueen = new ChessPiece(ChessGame.TeamColor.BLACK,ChessPiece.PieceType.QUEEN);
+        ChessPiece whiteQueen = new ChessPiece(ChessGame.TeamColor.WHITE,ChessPiece.PieceType.QUEEN);
 
         // Create Bishops
-        ChessPiece b_bishop = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        ChessPiece w_bishop = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        ChessPiece blackBishop = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        ChessPiece whiteBishop = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
 
         // Create Knights
-        ChessPiece b_knight = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        ChessPiece w_knight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        ChessPiece blackKnight = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        ChessPiece whiteKnight = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
 
         // Create Rooks
-        ChessPiece b_rook = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        ChessPiece w_rook = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        ChessPiece blackRook = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        ChessPiece whiteRook = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
 
         // Place Pieces by moving from left to right on the chess board.
         for(int i =1; i < 9; i++){
@@ -89,34 +89,34 @@ public class ChessBoard implements Cloneable{
             ChessPosition black_back_position  = new ChessPosition(8,i);
 
             // Add Pawns to the front
-            addPiece(white_front_position,w_pawn);
-            addPiece(black_front_position,b_pawn);
+            addPiece(white_front_position,whitePawn);
+            addPiece(black_front_position, blackPawn);
 
             // Logic to add the correct pieces to the back
             if(i==1 || i==8) {
                 // Add Rooks
-                addPiece(white_back_position, w_rook);
-                addPiece(black_back_position, b_rook);
+                addPiece(white_back_position, whiteRook);
+                addPiece(black_back_position, blackRook);
             }
             else if(i==2 || i==7){
                 // Add Knights
-                addPiece(white_back_position, w_knight);
-                addPiece(black_back_position, b_knight);
+                addPiece(white_back_position, whiteKnight);
+                addPiece(black_back_position, blackKnight);
             }
             else if (i==3 || i==6){
                 // Add Bishops
-                addPiece(white_back_position, w_bishop);
-                addPiece(black_back_position, b_bishop);
+                addPiece(white_back_position, whiteBishop);
+                addPiece(black_back_position, blackBishop);
             }
             else if (i==4){
                 // Add Queens
-                addPiece(white_back_position, w_queen);
-                addPiece(black_back_position, b_queen);
+                addPiece(white_back_position, whiteQueen);
+                addPiece(black_back_position, blackQueen);
             }
             else{
                 // Add Kings
-                addPiece(white_back_position, w_king);
-                addPiece(black_back_position, b_king);
+                addPiece(white_back_position, whiteKing);
+                addPiece(black_back_position, blackKing);
             }
         }
     }
