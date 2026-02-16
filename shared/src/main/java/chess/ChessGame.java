@@ -236,34 +236,8 @@ public class ChessGame implements Cloneable{
             return false;
         }
 
-        // Now we need to loop through all possible moves that the team can make to see if it can get the king out of check
-        for(int i = 1; i < 9; i++){
-            for(int j = 1; j < 9; j++){
-
-                ChessPosition currPos = new ChessPosition(i,j);
-
-                // Skip if there isn't a piece in the current position
-                if(board.getPiece(currPos)==null){
-                    continue;
-                }
-
-                // Skip if the piece is on the other team
-                if(board.getPiece(currPos).getTeamColor()!=teamColor){
-                    continue;
-                }
-
-                // Get the moves that the piece can make
-                Collection<ChessMove> potentialMoves = validMoves(currPos);
-
-                // If there is a move, return false
-                if(!potentialMoves.isEmpty()){
-                    return false;
-                }
-            }
-        }
-
         // if you go through all the pieces and there aren't any moves available, return true
-        return true;
+        return refineMoves(teamColor);
     }
 
     /**
@@ -279,7 +253,13 @@ public class ChessGame implements Cloneable{
             return false;
         }
 
-        // Now we need to loop through all possible moves that the team can make to see if there is an available move
+        // if you go through all the pieces and there aren't any moves available, return true
+        return refineMoves(teamColor);
+
+    }
+
+    boolean refineMoves(TeamColor teamColor){
+        // We need to loop through all possible moves that the team can make to see if there is an available move
         for(int i = 1; i < 9; i++){
             for(int j = 1; j < 9; j++){
 
@@ -305,9 +285,7 @@ public class ChessGame implements Cloneable{
             }
         }
 
-        // if you go through all the pieces and there aren't any moves available, return true
         return true;
-
     }
 
     /**
