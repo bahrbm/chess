@@ -83,40 +83,40 @@ public class ChessBoard implements Cloneable{
         for(int i =1; i < 9; i++){
 
             // Get current position
-            ChessPosition white_front_position = new ChessPosition(2,i);
-            ChessPosition white_back_position  = new ChessPosition(1,i);
-            ChessPosition black_front_position = new ChessPosition(7,i);
-            ChessPosition black_back_position  = new ChessPosition(8,i);
+            ChessPosition whiteFrontPosition = new ChessPosition(2,i);
+            ChessPosition whiteBackPosition  = new ChessPosition(1,i);
+            ChessPosition blackFrontPosition = new ChessPosition(7,i);
+            ChessPosition blackBackPosition  = new ChessPosition(8,i);
 
             // Add Pawns to the front
-            addPiece(white_front_position,whitePawn);
-            addPiece(black_front_position, blackPawn);
+            addPiece(whiteFrontPosition,whitePawn);
+            addPiece(blackFrontPosition, blackPawn);
 
             // Logic to add the correct pieces to the back
             if(i==1 || i==8) {
                 // Add Rooks
-                addPiece(white_back_position, whiteRook);
-                addPiece(black_back_position, blackRook);
+                addPiece(whiteBackPosition, whiteRook);
+                addPiece(blackBackPosition, blackRook);
             }
             else if(i==2 || i==7){
                 // Add Knights
-                addPiece(white_back_position, whiteKnight);
-                addPiece(black_back_position, blackKnight);
+                addPiece(whiteBackPosition, whiteKnight);
+                addPiece(blackBackPosition, blackKnight);
             }
             else if (i==3 || i==6){
                 // Add Bishops
-                addPiece(white_back_position, whiteBishop);
-                addPiece(black_back_position, blackBishop);
+                addPiece(whiteBackPosition, whiteBishop);
+                addPiece(blackBackPosition, blackBishop);
             }
             else if (i==4){
                 // Add Queens
-                addPiece(white_back_position, whiteQueen);
-                addPiece(black_back_position, blackQueen);
+                addPiece(whiteBackPosition, whiteQueen);
+                addPiece(blackBackPosition, blackQueen);
             }
             else{
                 // Add Kings
-                addPiece(white_back_position, whiteKing);
-                addPiece(black_back_position, blackKing);
+                addPiece(whiteBackPosition, whiteKing);
+                addPiece(blackBackPosition, blackKing);
             }
         }
     }
