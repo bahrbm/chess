@@ -1,4 +1,4 @@
 package service.request;
 
-public class CreateGameRequest {
+public class CreateGameRequest{
 }
