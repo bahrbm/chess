@@ -25,6 +25,10 @@ public class UserService {
         String password = registerRequest.password();
         String email = registerRequest.email();
 
+        if(username == null || password == null || email == null){
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+        }
+
         if(isUserInDatabase(username)){
             throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: already taken");
         }

@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
-import service.UserService;
+import service.*;
 import service.request.*;
 import service.result.*;
 
@@ -14,12 +14,14 @@ public class Server {
 
     private final Javalin javalin;
     private final UserService userService = new UserService(new MemoryUserDAO(),new MemoryAuthDAO());
+    private final ClearService clearService = new ClearService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO());
 
     public Server() {
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user",this::addUser)
+                .delete("/db", this::clearDB)
                 .exception(DataAccessException.class, this::exceptionHandler)
                 ;
 
@@ -38,6 +40,12 @@ public class Server {
         RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult registerResult = userService.register(registerRequest);
         ctx.result(new Gson().toJson(registerResult));
+    }
+
+    private void clearDB(Context ctx) throws DataAccessException{
+        ClearRequest clearRequest = new Gson().fromJson(ctx.body(), ClearRequest.class);
+        clearService.clear(clearRequest);
+        //ctx.result(new Gson().toJson(clearResult));
     }
 
     private void exceptionHandler(DataAccessException ex, Context ctx){

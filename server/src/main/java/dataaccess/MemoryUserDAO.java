@@ -17,4 +17,8 @@ public class MemoryUserDAO implements UserDAO{
         return users.getOrDefault(username, null);
     }
 
+    @Override
+    public void clearUserData(){
+        users.clear();
+    }
 }
