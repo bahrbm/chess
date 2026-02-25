@@ -8,17 +8,20 @@ import service.UserService;
 import service.request.*;
 import service.result.*;
 
+import javax.xml.crypto.Data;
+
 public class Server {
 
     private final Javalin javalin;
-    private final UserService userService = new UserService(new MemoryUserDAO());
+    private final UserService userService = new UserService(new MemoryUserDAO(),new MemoryAuthDAO());
 
     public Server() {
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user",this::addUser);
-
+                .post("/user",this::addUser)
+                .exception(DataAccessException.class, this::exceptionHandler)
+                ;
 
     }
 
@@ -36,4 +39,11 @@ public class Server {
         RegisterResult registerResult = userService.register(registerRequest);
         ctx.result(new Gson().toJson(registerResult));
     }
+
+    private void exceptionHandler(DataAccessException ex, Context ctx){
+        ctx.status(ex.toHttpStatusCode());
+        ctx.result(ex.toJson());
+    }
+
+
 }

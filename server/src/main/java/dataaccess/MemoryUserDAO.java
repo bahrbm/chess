@@ -2,18 +2,19 @@ package dataaccess;
 
 import model.*;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class MemoryUserDAO implements UserDAO{
-    final private HashMap<String, Collection<String>> users = new HashMap<>();
+    final private HashMap<String, UserData> users = new HashMap<>();
 
     @Override
-    public void createUser(UserData u) throws DataAccessException {
-        users.put(u.username(),new LinkedList<>(Arrays.asList(u.password(),u.email())));
+    public void createUser(UserData u){
+        users.put(u.username(),u);
+    }
 
+    @Override
+    public UserData findByUsername(String username) {
+        return users.getOrDefault(username, null);
     }
 
 }
