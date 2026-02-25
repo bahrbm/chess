@@ -21,8 +21,9 @@ public class Server {
 
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .post("/user",this::addUser)
+                .post("/user", this::addUser)
                 .delete("/db", this::clearDB)
+                .post("/session", this::loginUser)
                 .exception(DataAccessException.class, this::exceptionHandler)
                 ;
 
@@ -41,6 +42,12 @@ public class Server {
         RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult registerResult = userService.register(registerRequest);
         ctx.result(new Gson().toJson(registerResult));
+    }
+
+    private void loginUser(Context ctx) throws DataAccessException{
+        LoginRequest loginRequest = new Gson().fromJson(ctx.body(), LoginRequest.class);
+        LoginResult loginResult = userService.login(loginRequest);
+        ctx.result(new Gson().toJson(loginResult));
     }
 
     private void clearDB(Context ctx) throws DataAccessException{

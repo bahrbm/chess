@@ -4,8 +4,7 @@ import dataaccess.*;
 import model.*;
 import service.request.*;
 import service.result.*;
-
-import javax.xml.crypto.Data;
+import java.util.Objects;
 import java.util.UUID;
 
 
@@ -36,21 +35,45 @@ public class UserService {
         UserData newUser = new UserData(username,password,email);
         userDAO.createUser(newUser);
 
-        String authToken = generateToken();
-        AuthData authData = new AuthData(authToken,username);
-        authDAO.createAuth(authData);
+        String authToken = generateToken(username, authDAO);
 
         return new RegisterResult(username,authToken);
     }
 
-    //public LoginResult login(LoginRequest loginRequest){};
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException{
+
+        String username = loginRequest.username();
+        String password = loginRequest.password();
+
+        if(username == null || password == null){
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+        }
+
+        if(!isUserInDatabase(username)){
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+        }
+
+        UserData currUser = userDAO.getUser(username);
+
+        if(!Objects.equals(currUser.password(), password)){
+            throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
+        }
+
+        String authToken = generateToken(username,authDAO);
+
+        return new LoginResult(username,authToken);
+    };
+
     //public void logout(LogoutRequest logoutRequest){};
 
     private boolean isUserInDatabase(String username){
         return userDAO.findByUsername(username) != null;
     }
 
-    public static String generateToken() {
-        return UUID.randomUUID().toString();
+    public static String generateToken(String username, AuthDAO authDAO) {
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(username, authToken);
+        authDAO.createAuth(authData);
+        return authToken;
     }
 }

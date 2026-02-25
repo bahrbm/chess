@@ -9,4 +9,6 @@ public interface UserDAO {
     UserData findByUsername(String username);
 
     void clearUserData();
+
+    UserData getUser(String username);
 }
