@@ -8,13 +8,14 @@ import service.*;
 import service.request.*;
 import service.result.*;
 
-import javax.xml.crypto.Data;
-
 public class Server {
 
     private final Javalin javalin;
-    private final UserService userService = new UserService(new MemoryUserDAO(),new MemoryAuthDAO());
-    private final ClearService clearService = new ClearService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO());
+    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
+    private final MemoryUserDAO userDAO = new MemoryUserDAO();
+    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
+    private final UserService userService = new UserService(userDAO, authDAO);
+    private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
 
     public Server() {
 
@@ -43,9 +44,7 @@ public class Server {
     }
 
     private void clearDB(Context ctx) throws DataAccessException{
-        ClearRequest clearRequest = new Gson().fromJson(ctx.body(), ClearRequest.class);
-        clearService.clear(clearRequest);
-        //ctx.result(new Gson().toJson(clearResult));
+        clearService.clear();
     }
 
     private void exceptionHandler(DataAccessException ex, Context ctx){
