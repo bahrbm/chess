@@ -33,10 +33,4 @@ public class DataAccessException extends Exception{
         return new Gson().toJson(Map.of("message", getMessage()));
     }
 
-//    public DataAccessException(String message) {
-//        super(message);
-//    }
-//    public DataAccessException(String message, Throwable ex) {
-//        super(message, ex);
-//    }
 }

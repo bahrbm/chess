@@ -36,7 +36,6 @@ public class UserService {
         userDAO.createUser(newUser);
 
         String authToken = generateToken(username, authDAO);
-
         return new RegisterResult(username,authToken);
     }
 
@@ -48,8 +47,7 @@ public class UserService {
         if(username == null || password == null){
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
-
-        if(!isUserInDatabase(username)){
+        else if(!isUserInDatabase(username)){
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
 
@@ -60,14 +58,37 @@ public class UserService {
         }
 
         String authToken = generateToken(username,authDAO);
-
         return new LoginResult(username,authToken);
     };
 
-    //public void logout(LogoutRequest logoutRequest){};
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException{
+
+        System.out.println("Attempting to log out user");
+
+        String authToken = logoutRequest.authToken();
+
+        System.out.println(authToken);
+
+        if(authToken == null){
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+        }
+        else if(!isAuthTokenValid(authToken)){
+            throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
+        }
+
+        authDAO.deleteAuth(authToken);
+    };
 
     private boolean isUserInDatabase(String username){
         return userDAO.findByUsername(username) != null;
+    }
+
+    private boolean isAuthTokenValid(String authToken){
+        AuthData authData = authDAO.findByAuthToken(authToken);
+        if(authData == null){
+            System.out.println("auth Data is null");
+        }
+        return authDAO.findByAuthToken(authToken) != null;
     }
 
     public static String generateToken(String username, AuthDAO authDAO) {

@@ -24,6 +24,7 @@ public class Server {
                 .post("/user", this::addUser)
                 .delete("/db", this::clearDB)
                 .post("/session", this::loginUser)
+                .delete("/session", this::logoutUser)
                 .exception(DataAccessException.class, this::exceptionHandler)
                 ;
 
@@ -48,6 +49,11 @@ public class Server {
         LoginRequest loginRequest = new Gson().fromJson(ctx.body(), LoginRequest.class);
         LoginResult loginResult = userService.login(loginRequest);
         ctx.result(new Gson().toJson(loginResult));
+    }
+
+    private void logoutUser(Context ctx) throws DataAccessException{
+        LogoutRequest logoutRequest = new LogoutRequest(ctx.header("Authorization"));
+        userService.logout(logoutRequest);
     }
 
     private void clearDB(Context ctx) throws DataAccessException{

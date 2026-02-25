@@ -15,7 +15,7 @@ public class ClearService {
     }
 
     public void clear() throws DataAccessException{
-        System.out.println("Clearing database");
+        //System.out.println("Clearing database");
         userDAO.clearUserData();
         authDAO.clearAuthData();
         gameDAO.clearGameData();
