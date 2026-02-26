@@ -61,32 +61,21 @@ public class UserService {
         return new LoginResult(username,authToken);
     };
 
-    public void logout(LogoutRequest logoutRequest) throws DataAccessException{
-
-        System.out.println("Attempting to log out user");
-
-        String authToken = logoutRequest.authToken();
-
-        System.out.println(authToken);
-
-        if(authToken == null){
-            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
-        }
-        else if(!isAuthTokenValid(authToken)){
-            throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
-        }
-
-        authDAO.deleteAuth(authToken);
+    public void logout(LogoutRequest logoutRequest){
+        authDAO.deleteAuth(logoutRequest.authToken());
     };
 
     private boolean isUserInDatabase(String username){
         return userDAO.findByUsername(username) != null;
     }
 
-    private boolean isAuthTokenValid(String authToken){
-        AuthData authData = authDAO.findByAuthToken(authToken);
-        if(authData == null){
-            System.out.println("auth Data is null");
+    public boolean isAuthTokenValid(String authToken) throws DataAccessException{
+
+        if(authToken == null){
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+        }
+        else if(!isAuthTokenValid(authToken)){
+            throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
         }
         return authDAO.findByAuthToken(authToken) != null;
     }

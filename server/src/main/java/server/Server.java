@@ -13,11 +13,12 @@ import javax.xml.crypto.Data;
 public class Server {
 
     private final Javalin javalin;
-    private final MemoryAuthDAO authDAO = new MemoryAuthDAO();
-    private final MemoryUserDAO userDAO = new MemoryUserDAO();
-    private final MemoryGameDAO gameDAO = new MemoryGameDAO();
-    private final UserService userService = new UserService(userDAO, authDAO);
+    private final MemoryAuthDAO authDAO     = new MemoryAuthDAO();
+    private final MemoryUserDAO userDAO     = new MemoryUserDAO();
+    private final MemoryGameDAO gameDAO     = new MemoryGameDAO();
+    private final UserService userService   = new UserService(userDAO, authDAO);
     private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
+    private final GameService gameService   = new GameService(gameDAO);
 
     public Server() {
 
@@ -56,11 +57,19 @@ public class Server {
 
     private void logoutUser(Context ctx) throws DataAccessException{
         LogoutRequest logoutRequest = new LogoutRequest(ctx.header("Authorization"));
+
+        userService.isAuthTokenValid(logoutRequest.authToken());
+
         userService.logout(logoutRequest);
     }
 
     private void createGame(Context ctx) throws DataAccessException{
         CreateGameRequest createGameRequest = new Gson().fromJson(ctx.body(), CreateGameRequest.class);
+        String authToken = ctx.header("Authorization");
+
+        userService.isAuthTokenValid(authToken);
+
+        CreateGameResult createGameResult = gameService.create(createGameRequest);
     }
 
     private void clearDB(Context ctx) throws DataAccessException{
