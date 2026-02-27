@@ -1,4 +1,4 @@
 package service.request;
 
-public class JoinGameRequest {
+public record JoinGameRequest(int gameID, String playerColor) {
 }

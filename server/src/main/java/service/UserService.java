@@ -69,15 +69,17 @@ public class UserService {
         return userDAO.findByUsername(username) != null;
     }
 
-    public boolean isAuthTokenValid(String authToken) throws DataAccessException{
+    public void isAuthTokenValid(String authToken) throws DataAccessException{
 
         if(authToken == null){
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
-        else if(!isAuthTokenValid(authToken)){
+
+        AuthData authData = authDAO.findByAuthToken(authToken);
+
+        if(authData == null){
             throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
         }
-        return authDAO.findByAuthToken(authToken) != null;
     }
 
     public static String generateToken(String username, AuthDAO authDAO) {
@@ -85,5 +87,9 @@ public class UserService {
         AuthData authData = new AuthData(username, authToken);
         authDAO.createAuth(authData);
         return authToken;
+    }
+
+    public AuthData getUser(String authToken){
+        return authDAO.findByAuthToken(authToken);
     }
 }

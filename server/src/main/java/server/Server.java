@@ -29,6 +29,7 @@ public class Server {
                 .post("/session", this::loginUser)
                 .delete("/session", this::logoutUser)
                 .post("/game", this::createGame)
+                .put("/game", this::joinGame)
                 .exception(DataAccessException.class, this::exceptionHandler)
                 ;
 
@@ -70,6 +71,16 @@ public class Server {
         userService.isAuthTokenValid(authToken);
 
         CreateGameResult createGameResult = gameService.create(createGameRequest);
+        ctx.result(new Gson().toJson(createGameResult));
+    }
+
+    private void joinGame(Context ctx) throws DataAccessException{
+        JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest.class);
+        String authToken = ctx.header("Authorization");
+
+        userService.isAuthTokenValid(authToken);
+
+        gameService.joinGame(joinGameRequest,userService.getUser(authToken));
     }
 
     private void clearDB(Context ctx) throws DataAccessException{
