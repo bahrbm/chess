@@ -48,7 +48,7 @@ public class GameService {
             GameData newGame = new GameData(currGame.gameID(),currGame.whiteUsername(),a.username(),currGame.gameName(), new ChessGame());
             gameDAO.updateGame(newGame);
         }
-        else{
+        else if(Objects.equals(r.playerColor(), "WHITE")){
 
             if(currGame.whiteUsername() != null){
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
@@ -57,5 +57,12 @@ public class GameService {
             GameData newGame = new GameData(currGame.gameID(),a.username(),currGame.blackUsername(), currGame.gameName(), new ChessGame());
             gameDAO.updateGame(newGame);
         }
+        else{
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+        }
+    }
+
+    public ListGamesResult listGames(){
+        return new ListGamesResult(gameDAO.getAllGames());
     }
 }
