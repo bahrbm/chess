@@ -8,8 +8,6 @@ import service.*;
 import service.request.*;
 import service.result.*;
 
-import javax.xml.crypto.Data;
-
 public class Server {
 
     private final Javalin javalin;
@@ -29,7 +27,7 @@ public class Server {
                 .post("/session", this::loginUser)
                 .delete("/session", this::logoutUser)
                 .post("/game", this::createGame)
-                .put("/game", this::joinGame)
+                .put("/game", this::joinPlayer)
                 .get("/game", this::listGames)
                 .exception(DataAccessException.class, this::exceptionHandler)
                 ;
@@ -75,7 +73,7 @@ public class Server {
         ctx.result(new Gson().toJson(createGameResult));
     }
 
-    private void joinGame(Context ctx) throws DataAccessException{
+    private void joinPlayer(Context ctx) throws DataAccessException{
         JoinGameRequest joinGameRequest = new Gson().fromJson(ctx.body(),JoinGameRequest.class);
         String authToken = ctx.header("Authorization");
 

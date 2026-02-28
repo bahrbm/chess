@@ -48,7 +48,7 @@ public class UserService {
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
         else if(!isUserInDatabase(username)){
-            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+            throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
         }
 
         UserData currUser = userDAO.getUser(username);
@@ -59,11 +59,11 @@ public class UserService {
 
         String authToken = generateToken(username,authDAO);
         return new LoginResult(username,authToken);
-    };
+    }
 
     public void logout(LogoutRequest logoutRequest){
         authDAO.deleteAuth(logoutRequest.authToken());
-    };
+    }
 
     private boolean isUserInDatabase(String username){
         return userDAO.findByUsername(username) != null;

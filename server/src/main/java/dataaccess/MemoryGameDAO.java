@@ -41,7 +41,9 @@ public class MemoryGameDAO implements GameDAO{
 
         games.put(String.valueOf(gameID),newGame);
 
-        listOfGames.set(gameID-1, new ImportantGameInfo(gameID, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName()));
+        ImportantGameInfo gameChange = new ImportantGameInfo(gameID, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName());
+
+        listOfGames.set(gameID-1, gameChange);
     }
 
     @Override
