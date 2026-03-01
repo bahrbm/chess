@@ -65,4 +65,6 @@ public class GameService {
     public ListGamesResult listGames(){
         return new ListGamesResult(gameDAO.getAllGames());
     }
+
+
 }

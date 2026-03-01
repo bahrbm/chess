@@ -14,11 +14,12 @@ public class ClearService {
         this.gameDAO = gameDAO;
     }
 
-    public void clear() throws DataAccessException{
+    public void clear(){
         //System.out.println("Clearing database");
         userDAO.clearUserData();
         authDAO.clearAuthData();
         gameDAO.clearGameData();
     }
+
 
 }
