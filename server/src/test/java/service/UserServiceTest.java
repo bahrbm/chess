@@ -15,16 +15,16 @@ class UserServiceTest {
 
     private final UserDAO userDAO = new MemoryUserDAO();
     private final AuthDAO authDAO = new MemoryAuthDAO();
-    private static final UserDAO existingUserDAO = new MemoryUserDAO();
-    private static final AuthDAO existingAuthDAO = new MemoryAuthDAO();
+    private static final UserDAO EXISTING_USER_DAO = new MemoryUserDAO();
+    private static final AuthDAO EXISTING_AUTH_DAO = new MemoryAuthDAO();
     private final UserService service = new UserService(userDAO,authDAO);
-    private static UserService existingService = new UserService(existingUserDAO,existingAuthDAO);
+    private static UserService existingService = new UserService(EXISTING_USER_DAO, EXISTING_AUTH_DAO);
     private static String existingAuthToken;
-    private static final String existingUsername = "user1";
+    private static final String EXISTING_USERNAME = "user1";
 
     @BeforeAll
     static void setup() throws DataAccessException {
-        RegisterRequest user = new RegisterRequest(existingUsername,"password","u1@mail");
+        RegisterRequest user = new RegisterRequest(EXISTING_USERNAME,"password","u1@mail");
 
         RegisterResult result = existingService.register(user);
         existingAuthToken = result.authToken();
@@ -64,7 +64,7 @@ class UserServiceTest {
 
         LoginResult result = existingService.login(request);
 
-        AuthData data = existingAuthDAO.findByAuthToken(result.authToken());
+        AuthData data = EXISTING_AUTH_DAO.findByAuthToken(result.authToken());
 
         assertEquals("user1",data.username());
     }
@@ -102,7 +102,7 @@ class UserServiceTest {
 
         AuthData data = existingService.getUser(existingAuthToken);
 
-        assertEquals(existingUsername,data.username());
+        assertEquals(EXISTING_USERNAME,data.username());
     }
 
     @Test
