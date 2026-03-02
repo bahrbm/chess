@@ -47,7 +47,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public Collection<ImportantGameInfo> getAllGames() {
+    public LinkedList<ImportantGameInfo> getAllGames() {
         return listOfGames;
     }
 }
