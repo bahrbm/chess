@@ -82,14 +82,20 @@ public class UserService {
         }
     }
 
-    public static String generateToken(String username, AuthDAO authDAO) {
+    private static String generateToken(String username, AuthDAO authDAO) {
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(username, authToken);
         authDAO.createAuth(authData);
         return authToken;
     }
 
-    public AuthData getUser(String authToken){
-        return authDAO.findByAuthToken(authToken);
+    public AuthData getUser(String authToken) throws DataAccessException {
+        AuthData data = authDAO.findByAuthToken(authToken);
+
+        if(data==null){
+            throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
+        }
+
+        return data;
     }
 }
