@@ -30,12 +30,12 @@ public class Pawn implements MoveCalc{
             checkBlackCapture(row,col);
         }
 
-        Forward(row,col);
+        forward(row,col);
 
         return validMoves;
     }
 
-    void Forward(int row, int col){
+    void forward(int row, int col){
 
         ChessPosition[] forwardMoves = findForwardMoves(row,col);
 
