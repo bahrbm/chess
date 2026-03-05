@@ -24,66 +24,39 @@ public class Pawn implements MoveCalc{
 
         // White Moves
         if(myTeam == ChessGame.TeamColor.WHITE){
-            whiteForward(row,col);
             checkWhiteCapture(row,col);
         }
         else{
-            blackForward(row,col);
             checkBlackCapture(row,col);
         }
+
+        Forward(row,col);
 
         return validMoves;
     }
 
-    void whiteForward(int row, int col){
+    void Forward(int row, int col){
 
-        ChessPosition forwardOne = new ChessPosition(row+1,col);
-        ChessPosition forwardTwo = new ChessPosition(row+2,col);
+        ChessPosition[] forwardMoves = findForwardMoves(row,col);
 
         // Check if there is a piece directly in front of the pawn
-        if(board.getPiece(forwardOne)!=null){
+        if(board.getPiece(forwardMoves[0])!=null){
             return;
         }
 
         // Check for starting moves
         if(isAtStart(row)){
-            validMoves.add(new ChessMove(startPosition,forwardOne,null));
-            if(board.getPiece(forwardTwo)==null){
-                validMoves.add(new ChessMove(startPosition,forwardTwo,null));
+            validMoves.add(new ChessMove(startPosition,forwardMoves[0],null));
+            if(board.getPiece(forwardMoves[1])==null){
+                validMoves.add(new ChessMove(startPosition,forwardMoves[1],null));
             }
         }
         // Check for promotion
         else if(canPromote(row)){
-            addPromotion(forwardOne);
+            addPromotion(forwardMoves[0]);
         }
         else{
-            validMoves.add(new ChessMove(startPosition,forwardOne,null));
-        }
-    }
-
-    void blackForward(int row, int col){
-
-        ChessPosition forwardOne = new ChessPosition(row-1,col);
-        ChessPosition forwardTwo = new ChessPosition(row-2,col);
-
-        // Check if there is a piece directly in front of the pawn
-        if(board.getPiece(forwardOne)!=null){
-            return;
-        }
-
-        // Check for starting moves
-        if(isAtStart(row)){
-            validMoves.add(new ChessMove(startPosition,forwardOne,null));
-            if(board.getPiece(forwardTwo)==null){
-                validMoves.add(new ChessMove(startPosition,forwardTwo,null));
-            }
-        }
-        // Check for promotion
-        else if(canPromote(row)){
-            addPromotion(forwardOne);
-        }
-        else{
-            validMoves.add(new ChessMove(startPosition,forwardOne,null));
+            validMoves.add(new ChessMove(startPosition,forwardMoves[0],null));
         }
     }
 
@@ -201,5 +174,16 @@ public class Pawn implements MoveCalc{
         validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.BISHOP));
         validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.ROOK));
         validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.KNIGHT));
+    }
+
+    ChessPosition[] findForwardMoves(int row, int col){
+        if(myTeam == ChessGame.TeamColor.BLACK){
+            return new ChessPosition[]{new ChessPosition(row-1,col),
+                                       new ChessPosition(row-2,col)};
+        }
+        else{
+            return new ChessPosition[]{new ChessPosition(row+1,col),
+                                       new ChessPosition(row+2,col)};
+        }
     }
 }
