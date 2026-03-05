@@ -8,19 +8,19 @@ public class Pawn implements MoveCalc{
     private final ChessBoard board;
     private final ChessPosition startPosition;
     private final Collection<ChessMove> validMoves = new LinkedList<>();
+    private final ChessGame.TeamColor myTeam;
 
     public Pawn(ChessBoard board, ChessPosition startPosition){
         this.board = board;
         this.startPosition = startPosition;
+        myTeam = board.getPiece(startPosition).getTeamColor();
     }
 
     @Override
     public Collection<ChessMove> findMoves() {
-        // Get the piece, row, column, and team color
-        ChessPiece myPiece = board.getPiece(startPosition);
+        // Get row and column
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
-        ChessGame.TeamColor myTeam = myPiece.getTeamColor();
 
         // White Moves
         if(myTeam == ChessGame.TeamColor.WHITE){
@@ -53,11 +53,8 @@ public class Pawn implements MoveCalc{
             }
         }
         // Check for promotion
-        else if(row==7){
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.QUEEN));
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.BISHOP));
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.ROOK));
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.KNIGHT));
+        else if(canPromote(row)){
+            addPromotion(forwardOne);
         }
         else{
             validMoves.add(new ChessMove(startPosition,forwardOne,null));
@@ -82,11 +79,8 @@ public class Pawn implements MoveCalc{
             }
         }
         // Check for promotion
-        else if(row==2){
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.QUEEN));
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.BISHOP));
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.ROOK));
-            validMoves.add(new ChessMove(startPosition,forwardOne, ChessPiece.PieceType.KNIGHT));
+        else if(canPromote(row)){
+            addPromotion(forwardOne);
         }
         else{
             validMoves.add(new ChessMove(startPosition,forwardOne,null));
@@ -105,11 +99,8 @@ public class Pawn implements MoveCalc{
                 // Check if the piece is on the other team
                 if(board.getPiece(rightDiagonal).getTeamColor() == ChessGame.TeamColor.BLACK){
                     // Check for promotion
-                    if(row==7){
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.QUEEN));
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.BISHOP));
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.ROOK));
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.KNIGHT));
+                    if(canPromote(row)){
+                        addPromotion(rightDiagonal);
                     }
                     else{
                         validMoves.add(new ChessMove(startPosition,rightDiagonal,null));
@@ -128,11 +119,8 @@ public class Pawn implements MoveCalc{
                 // Check if the piece is on the other team
                 if(board.getPiece(leftDiagonal).getTeamColor() == ChessGame.TeamColor.BLACK){
                     // Check for promotion
-                    if(row==7){
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.QUEEN));
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.BISHOP));
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.ROOK));
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.KNIGHT));
+                    if(canPromote(row)){
+                        addPromotion(leftDiagonal);
                     }
                     else{
                         validMoves.add(new ChessMove(startPosition,leftDiagonal,null));
@@ -154,11 +142,8 @@ public class Pawn implements MoveCalc{
                 // Check if the piece is on the other team
                 if(board.getPiece(rightDiagonal).getTeamColor() == ChessGame.TeamColor.WHITE){
                     // Check for promotion
-                    if(row==2){
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.QUEEN));
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.BISHOP));
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.ROOK));
-                        validMoves.add(new ChessMove(startPosition,rightDiagonal, ChessPiece.PieceType.KNIGHT));
+                    if(canPromote(row)){
+                        addPromotion(rightDiagonal);
                     }
                     else{
                         validMoves.add(new ChessMove(startPosition,rightDiagonal,null));
@@ -177,11 +162,8 @@ public class Pawn implements MoveCalc{
                 // Check if the piece is on the other team
                 if(board.getPiece(leftDiagonal).getTeamColor() == ChessGame.TeamColor.WHITE){
                     // Check for promotion
-                    if(row==2){
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.QUEEN));
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.BISHOP));
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.ROOK));
-                        validMoves.add(new ChessMove(startPosition,leftDiagonal, ChessPiece.PieceType.KNIGHT));
+                    if(canPromote(row)){
+                        addPromotion(leftDiagonal);
                     }
                     else{
                         validMoves.add(new ChessMove(startPosition,leftDiagonal,null));
@@ -191,4 +173,22 @@ public class Pawn implements MoveCalc{
         }
     }
 
+    boolean canPromote(int row){
+
+        if(myTeam == ChessGame.TeamColor.WHITE && row == 7){
+            return true;
+        }
+        else if (myTeam == ChessGame.TeamColor.BLACK && row == 2){
+            return true;
+        }
+
+        return false;
+    }
+
+    void addPromotion(ChessPosition endPosition){
+        validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.QUEEN));
+        validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.BISHOP));
+        validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.ROOK));
+        validMoves.add(new ChessMove(startPosition,endPosition, ChessPiece.PieceType.KNIGHT));
+    }
 }
