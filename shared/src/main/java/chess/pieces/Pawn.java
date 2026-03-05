@@ -46,7 +46,7 @@ public class Pawn implements MoveCalc{
         }
 
         // Check for starting moves
-        if(row==2){
+        if(isAtStart(row)){
             validMoves.add(new ChessMove(startPosition,forwardOne,null));
             if(board.getPiece(forwardTwo)==null){
                 validMoves.add(new ChessMove(startPosition,forwardTwo,null));
@@ -72,7 +72,7 @@ public class Pawn implements MoveCalc{
         }
 
         // Check for starting moves
-        if(row==7){
+        if(isAtStart(row)){
             validMoves.add(new ChessMove(startPosition,forwardOne,null));
             if(board.getPiece(forwardTwo)==null){
                 validMoves.add(new ChessMove(startPosition,forwardTwo,null));
@@ -179,6 +179,17 @@ public class Pawn implements MoveCalc{
             return true;
         }
         else if (myTeam == ChessGame.TeamColor.BLACK && row == 2){
+            return true;
+        }
+
+        return false;
+    }
+
+    boolean isAtStart(int row){
+        if(myTeam == ChessGame.TeamColor.WHITE && row == 2){
+            return true;
+        }
+        else if (myTeam == ChessGame.TeamColor.BLACK && row == 7){
             return true;
         }
 
