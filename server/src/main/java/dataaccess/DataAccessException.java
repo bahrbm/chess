@@ -14,11 +14,15 @@ public class DataAccessException extends Exception{
         BadRequest,
     }
 
-    final private ErrorCode code;
+    private ErrorCode code;
 
     public DataAccessException(ErrorCode code, String message){
         super(message);
         this.code = code;
+    }
+
+    public DataAccessException(String message, Exception ex){
+
     }
 
     public int toHttpStatusCode(){
