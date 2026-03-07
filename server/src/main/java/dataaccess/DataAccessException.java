@@ -12,6 +12,7 @@ public class DataAccessException extends Exception{
         AlreadyTaken,
         Unauthorized,
         BadRequest,
+        ServerError,
     }
 
     private ErrorCode code;
@@ -30,6 +31,7 @@ public class DataAccessException extends Exception{
             case AlreadyTaken -> 403;
             case Unauthorized -> 401;
             case BadRequest -> 400;
+            case ServerError -> 500;
         };
     }
 
