@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 import service.request.*;
 import service.result.*;
 import java.util.Objects;
@@ -52,8 +53,9 @@ public class UserService {
         }
 
         UserData currUser = userDAO.findByUsername(username);
+        var hashedPassword = currUser.password();
 
-        if(!Objects.equals(currUser.password(), password)){
+        if(!BCrypt.checkpw(password, hashedPassword)){
             throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
         }
 
