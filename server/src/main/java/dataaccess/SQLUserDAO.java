@@ -35,7 +35,7 @@ public class SQLUserDAO implements UserDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to Access Database");
         }
         return null;
     }
@@ -62,7 +62,7 @@ public class SQLUserDAO implements UserDAO{
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to update database");
         }
     }
 
@@ -88,7 +88,7 @@ public class SQLUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to configure database");
         }
     }
 }

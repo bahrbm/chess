@@ -41,7 +41,7 @@ public class SQLAuthDAO implements AuthDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, String.format("Unable to read data: %s", e.getMessage()));
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to access database");
         }
         return null;
     }
@@ -62,13 +62,17 @@ public class SQLAuthDAO implements AuthDAO{
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p){
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param == null){
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, String.format("unable to update database: %s, %s", statement, e.getMessage()));
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to update database");
         }
     }
 
@@ -93,7 +97,7 @@ public class SQLAuthDAO implements AuthDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError,"Unable to configure database");
         }
     }
 }
