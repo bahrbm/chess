@@ -8,27 +8,29 @@ import service.*;
 import service.request.*;
 import service.result.*;
 
-import javax.xml.crypto.Data;
-
 public class Server {
 
     private final Javalin javalin;
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final UserService userService   = new UserService(userDAO, authDAO);
-    private final ClearService clearService = new ClearService(userDAO, authDAO, gameDAO);
-    private final GameService gameService   = new GameService(gameDAO);
-//    private UserDAO userSQL;
+    private final UserService userService;
+    private final ClearService clearService;
+    private final GameService gameService;
 
-    public Server() {
+    public Server(){
+        UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
 
-//        try{
-//            userSQL = new SQLUserDAO();
-//        }
-//        catch(DataAccessException ex){
-//            System.out.println("Database was not able to initialize: " + ex.getMessage());
-//        }
+        UserService tempUserService   = new UserService(userDAO, authDAO);
+        GameService tempGameService   = new GameService(gameDAO);
+        ClearService tempClearService = new ClearService(userDAO, authDAO, gameDAO);
+
+        this(tempUserService, tempGameService, tempClearService);
+    }
+
+    public Server(UserService userService, GameService gameService, ClearService clearService) {
+        this.userService  = userService;
+        this.gameService  = gameService;
+        this.clearService = clearService;
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::addUser)
