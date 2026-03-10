@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
+import org.eclipse.jetty.server.Authentication;
 import service.*;
 import service.request.*;
 import service.result.*;
@@ -16,15 +17,9 @@ public class Server {
     private final GameService gameService;
 
     public Server(){
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
-
-        UserService tempUserService   = new UserService(userDAO, authDAO);
-        GameService tempGameService   = new GameService(gameDAO);
-        ClearService tempClearService = new ClearService(userDAO, authDAO, gameDAO);
-
-        this(tempUserService, tempGameService, tempClearService);
+        this(new UserService(new MemoryUserDAO(), new MemoryAuthDAO()),
+             new GameService(new MemoryGameDAO()),
+             new ClearService(new MemoryUserDAO(), new MemoryAuthDAO(), new MemoryGameDAO()));
     }
 
     public Server(UserService userService, GameService gameService, ClearService clearService) {
