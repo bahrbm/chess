@@ -3,8 +3,8 @@ package dataaccess;
 import model.AuthData;
 
 public interface AuthDAO {
-    void createAuth(AuthData a);
-    void clearAuthData();
-    AuthData findByAuthToken(String authToken);
-    void deleteAuth(String authToken);
+    void createAuth(AuthData a) throws DataAccessException;
+    void clearAuthData() throws DataAccessException;
+    AuthData findByAuthToken(String authToken) throws DataAccessException;
+    void deleteAuth(String authToken) throws DataAccessException;
 }

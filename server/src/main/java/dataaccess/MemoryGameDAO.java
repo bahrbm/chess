@@ -3,7 +3,6 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 import service.result.ImportantGameInfo;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 

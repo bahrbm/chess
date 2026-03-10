@@ -5,7 +5,6 @@ import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 import service.request.*;
 import service.result.*;
-import java.util.Objects;
 import java.util.UUID;
 
 
@@ -63,7 +62,7 @@ public class UserService {
         return new LoginResult(username,authToken);
     }
 
-    public void logout(LogoutRequest logoutRequest){
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
         authDAO.deleteAuth(logoutRequest.authToken());
     }
 
@@ -90,7 +89,7 @@ public class UserService {
         return data;
     }
 
-    private static String generateToken(String username, AuthDAO authDAO) {
+    private static String generateToken(String username, AuthDAO authDAO) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(username, authToken);
         authDAO.createAuth(authData);

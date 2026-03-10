@@ -2,7 +2,6 @@ package dataaccess;
 
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.util.HashMap;
 
 public class MemoryUserDAO implements UserDAO{

@@ -17,7 +17,7 @@ public class ServerMain {
 
             UserDAO userDAO = new SQLUserDAO();
             GameDAO gameDAO = new MemoryGameDAO();
-            AuthDAO authDAO = new MemoryAuthDAO();
+            AuthDAO authDAO = new SQLAuthDAO();
 
             if (args.length >= 2 && args[1].equals("sql")) {
                 userDAO = new SQLUserDAO();
@@ -35,7 +35,7 @@ public class ServerMain {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
         }
         System.out.println("""
-                Pet Server:
+                Chess:
                 java ServerMain <port> [sql]
                 """);
     }

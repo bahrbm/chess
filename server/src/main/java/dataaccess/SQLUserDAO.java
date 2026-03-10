@@ -14,7 +14,7 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public void createUser(UserData u) throws DataAccessException {
-        var statement = "INSERT INTO user (username, password, email, json) VALUES (?, ?, ?, ?)";
+        var statement = "INSERT INTO UserData (username, password, email, json) VALUES (?, ?, ?, ?)";
         String encryptedPassword = BCrypt.hashpw(u.password(), BCrypt.gensalt());
         UserData newUser = new UserData(u.username(), encryptedPassword, u.email());
 
@@ -25,7 +25,7 @@ public class SQLUserDAO implements UserDAO{
     @Override
     public UserData findByUsername(String username) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT json FROM user WHERE username=?";
+            var statement = "SELECT json FROM UserData WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -42,7 +42,7 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public void clearUserData() throws DataAccessException {
-        var statement = "TRUNCATE user";
+        var statement = "TRUNCATE UserData";
         executeUpdate(statement);
     }
 
@@ -68,7 +68,7 @@ public class SQLUserDAO implements UserDAO{
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS  UserData (
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256) NOT NULL,
