@@ -14,7 +14,7 @@ class ClearServiceTest {
     private final ClearService service = new ClearService(userDAO,authDAO,gameDAO);
 
     @Test
-    void clear() {
+    void clear() throws DataAccessException {
         UserData user = new UserData("a","A","a@mail");
         AuthData auth = new AuthData("a","asdfghjk;lasdf");
 

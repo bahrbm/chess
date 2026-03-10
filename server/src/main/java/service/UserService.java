@@ -51,7 +51,7 @@ public class UserService {
             throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
         }
 
-        UserData currUser = userDAO.getUser(username);
+        UserData currUser = userDAO.findByUsername(username);
 
         if(!Objects.equals(currUser.password(), password)){
             throw new DataAccessException(DataAccessException.ErrorCode.Unauthorized,"Error: unauthorized");
@@ -63,10 +63,6 @@ public class UserService {
 
     public void logout(LogoutRequest logoutRequest){
         authDAO.deleteAuth(logoutRequest.authToken());
-    }
-
-    private boolean isUserInDatabase(String username){
-        return userDAO.findByUsername(username) != null;
     }
 
     public void isAuthTokenValid(String authToken) throws DataAccessException{
@@ -82,13 +78,6 @@ public class UserService {
         }
     }
 
-    private static String generateToken(String username, AuthDAO authDAO) {
-        String authToken = UUID.randomUUID().toString();
-        AuthData authData = new AuthData(username, authToken);
-        authDAO.createAuth(authData);
-        return authToken;
-    }
-
     public AuthData getUser(String authToken) throws DataAccessException {
         AuthData data = authDAO.findByAuthToken(authToken);
 
@@ -97,5 +86,16 @@ public class UserService {
         }
 
         return data;
+    }
+
+    private static String generateToken(String username, AuthDAO authDAO) {
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(username, authToken);
+        authDAO.createAuth(authData);
+        return authToken;
+    }
+
+    private boolean isUserInDatabase(String username) throws DataAccessException {
+        return userDAO.findByUsername(username) != null;
     }
 }

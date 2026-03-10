@@ -2,12 +2,10 @@ package server;
 
 import chess.*;
 import dataaccess.*;
-import service.ClearService;
-import service.GameService;
-import service.UserService;
+import service.*;
 
 public class ServerMain {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Server: " + piece);
 
@@ -17,7 +15,7 @@ public class ServerMain {
                 port = Integer.parseInt(args[0]);
             }
 
-            UserDAO userDAO = new MemoryUserDAO();
+            UserDAO userDAO = new SQLUserDAO();
             GameDAO gameDAO = new MemoryGameDAO();
             AuthDAO authDAO = new MemoryAuthDAO();
 
