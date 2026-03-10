@@ -56,8 +56,12 @@ public class SQLUserDAO implements UserDAO{
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 for (int i = 0; i < params.length; i++) {
                     Object param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    if (param instanceof String p){
+                        ps.setString(i + 1, p);
+                    }
+                    else if (param == null){
+                        ps.setNull(i + 1, NULL);
+                    }
                 }
                 ps.executeUpdate();
             }
