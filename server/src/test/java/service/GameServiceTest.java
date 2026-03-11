@@ -84,7 +84,7 @@ class GameServiceTest {
 
     @Test
     @DisplayName("List Games Works")
-    void listGames() {
+    void listGames() throws DataAccessException {
 
         ListGamesResult listOfGames = existingService.listGames();
 

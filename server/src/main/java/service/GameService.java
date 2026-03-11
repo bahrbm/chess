@@ -23,8 +23,8 @@ public class GameService {
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
 
-        int gameID = gameDAO.addGame(gameName);
-        return new CreateGameResult(gameID);
+        GameData newGame = gameDAO.addGame(gameName);
+        return new CreateGameResult(newGame.gameID());
     }
 
     public void joinGame(JoinGameRequest r, AuthData a) throws DataAccessException{
@@ -62,7 +62,7 @@ public class GameService {
         }
     }
 
-    public ListGamesResult listGames(){
+    public ListGamesResult listGames() throws DataAccessException {
         return new ListGamesResult(gameDAO.getAllGames());
     }
 

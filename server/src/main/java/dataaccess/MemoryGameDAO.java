@@ -18,7 +18,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public int addGame(String gameName) {
+    public GameData addGame(String gameName) {
 
         int gameID = games.size() + 1;
         GameData newGame = new GameData(gameID,null,null,gameName, new ChessGame());
@@ -26,7 +26,7 @@ public class MemoryGameDAO implements GameDAO{
         games.put(String.valueOf(gameID),newGame);
         listOfGames.add(new ImportantGameInfo(gameID, null, null, gameName));
 
-        return gameID;
+        return newGame;
     }
 
     @Override
