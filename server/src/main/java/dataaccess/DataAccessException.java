@@ -22,9 +22,9 @@ public class DataAccessException extends Exception{
         this.code = code;
     }
 
-    public DataAccessException(String message, Exception ex){
-
-    }
+//    public DataAccessException(String message, Exception ex){
+//
+//    }
 
     public int toHttpStatusCode(){
         return switch(code) {

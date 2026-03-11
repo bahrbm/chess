@@ -35,7 +35,7 @@ public class SQLUserDAO implements UserDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to Access Database");
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to access db");
         }
         return null;
     }
@@ -66,7 +66,7 @@ public class SQLUserDAO implements UserDAO{
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to update database");
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to update db");
         }
     }
 
@@ -92,7 +92,7 @@ public class SQLUserDAO implements UserDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to configure database");
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to configure db");
         }
     }
 }

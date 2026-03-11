@@ -4,7 +4,6 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
 import service.result.ImportantGameInfo;
-
 import java.sql.*;
 import java.util.LinkedList;
 
@@ -17,13 +16,29 @@ public class SQLGameDAO implements GameDAO{
     public SQLGameDAO() throws DataAccessException {
         configureDatabase();
         currID = 0;
+
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT id FROM GameData";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while(rs.next()){
+                        currID += 1;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to access db");
+        }
+
+
+
     }
 
     @Override
     public void clearGameData() throws DataAccessException {
         var statement = "TRUNCATE GameData";
-        currID = 0;
         executeUpdate(statement);
+        currID = 0;
     }
 
     @Override
@@ -48,7 +63,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (Exception e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Unable to Access Database");
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to access db");
         }
         return null;
     }
@@ -111,7 +126,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, e.getMessage());
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: Unable to update db");
         }
     }
 
@@ -138,7 +153,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, ex.getMessage());
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: Unable to configure db");
         }
     }
 }
