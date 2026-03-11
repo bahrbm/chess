@@ -23,10 +23,13 @@ public class Server {
         try{
             userDAO = new SQLUserDAO();
             authDAO = new SQLAuthDAO();
-            gameDAO = new MemoryGameDAO();
+            gameDAO = new SQLGameDAO();
         }
         catch(DataAccessException e){
             System.out.println(e.getMessage());
+            userDAO = new MemoryUserDAO();
+            authDAO = new MemoryAuthDAO();
+            gameDAO = new MemoryGameDAO();
         }
 
         userService  = new UserService(userDAO, authDAO);

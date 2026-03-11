@@ -22,6 +22,7 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void clearGameData() throws DataAccessException {
         var statement = "TRUNCATE GameData";
+        currID = 0;
         executeUpdate(statement);
     }
 
