@@ -29,9 +29,6 @@ public class SQLGameDAO implements GameDAO{
         } catch (Exception e) {
             throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to access db");
         }
-
-
-
     }
 
     @Override
