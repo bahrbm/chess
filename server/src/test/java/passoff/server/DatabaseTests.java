@@ -20,7 +20,7 @@ public class DatabaseTests {
 
     private static Server server;
 
-    private static Class<?> databaseManagerClass;
+    public static Class<?> databaseManagerClass;
 
 
     @BeforeAll
