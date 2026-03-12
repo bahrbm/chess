@@ -99,4 +99,16 @@ public class DatabaseManager {
         }
     }
 
+    public static void configureDatabase(String[] createStatements) throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to configure db");
+        }
+    }
 }

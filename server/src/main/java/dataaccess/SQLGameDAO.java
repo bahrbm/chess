@@ -14,7 +14,21 @@ public class SQLGameDAO implements GameDAO{
     private int currID;
 
     public SQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        String[] createStatements = {
+                """
+            CREATE TABLE IF NOT EXISTS  GameData (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `name` varchar(256) NOT NULL,
+              `whiteUsername` varchar(256) ,
+              `blackUsername` varchar(256) ,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              INDEX(name)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+        };
+
+        DatabaseManager.configureDatabase(createStatements);
         currID = 0;
 
         try (Connection conn = DatabaseManager.getConnection()) {
@@ -97,33 +111,6 @@ public class SQLGameDAO implements GameDAO{
         }
 
         return games;
-    }
-
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  GameData (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `whiteUsername` varchar(256) ,
-              `blackUsername` varchar(256) ,
-              `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(name)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: Unable to configure db");
-        }
     }
 
     private void setID(ResultSet rs) throws SQLException {
