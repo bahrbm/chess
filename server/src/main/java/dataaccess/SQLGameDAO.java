@@ -32,7 +32,7 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void clearGameData() throws DataAccessException {
         var statement = "TRUNCATE GameData";
-        executeUpdate(statement);
+        DatabaseManager.executeUpdate(statement);
         currID = 0;
     }
 
@@ -41,7 +41,8 @@ public class SQLGameDAO implements GameDAO{
         var statement = "INSERT INTO GameData (name, whiteUsername, blackUsername, json) VALUES (?, ?, ?, ?)";
         GameData newGame = new GameData(currID + 1, null, null, gameName, new ChessGame());
         String json = new Gson().toJson(newGame);
-        executeUpdate(statement, gameName, null, null, json);
+        DatabaseManager.executeUpdate(statement, gameName, null, null, json);
+        currID += 1;
         return newGame;
     }
 
@@ -79,9 +80,9 @@ public class SQLGameDAO implements GameDAO{
         var statement2 = "UPDATE GameData SET blackUsername = ? WHERE id = ?";
         var statement3 = "UPDATE GameData SET json = ? WHERE id = ?";
 
-        executeUpdate(statement1, whiteUsername, id);
-        executeUpdate(statement2, blackUsername, id);
-        executeUpdate(statement3, json, id);
+        DatabaseManager.executeUpdate(statement1, whiteUsername, id);
+        DatabaseManager.executeUpdate(statement2, blackUsername, id);
+        DatabaseManager.executeUpdate(statement3, json, id);
     }
 
     @Override
@@ -96,33 +97,6 @@ public class SQLGameDAO implements GameDAO{
         }
 
         return games;
-    }
-
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    if (param instanceof String p){
-                        ps.setString(i + 1, p);
-                    }
-                    else if (param instanceof Integer p){
-                        ps.setInt(i + 1, p);
-                    }
-                    else if (param == null){
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
-                ps.executeUpdate();
-
-                ResultSet rs = ps.getGeneratedKeys();
-                if(rs.next()){
-                    currID = rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: Unable to update db");
-        }
     }
 
     private final String[] createStatements = {

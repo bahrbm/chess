@@ -19,7 +19,7 @@ public class SQLUserDAO implements UserDAO{
         UserData newUser = new UserData(u.username(), encryptedPassword, u.email());
 
         String json = new Gson().toJson(newUser);
-        executeUpdate(statement, u.username(), encryptedPassword, u.email(), json);
+        DatabaseManager.executeUpdate(statement, u.username(), encryptedPassword, u.email(), json);
     }
 
     @Override
@@ -43,31 +43,12 @@ public class SQLUserDAO implements UserDAO{
     @Override
     public void clearUserData() throws DataAccessException {
         var statement = "TRUNCATE UserData";
-        executeUpdate(statement);
+        DatabaseManager.executeUpdate(statement);
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {
         var json = rs.getString("json");
         return new Gson().fromJson(json, UserData.class);
-    }
-
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                for (int i = 0; i < params.length; i++) {
-                    Object param = params[i];
-                    if (param instanceof String p){
-                        ps.setString(i + 1, p);
-                    }
-                    else if (param == null){
-                        ps.setNull(i + 1, NULL);
-                    }
-                }
-                ps.executeUpdate();
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: unable to update db");
-        }
     }
 
     private final String[] createStatements = {
