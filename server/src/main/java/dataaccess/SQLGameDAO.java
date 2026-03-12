@@ -21,9 +21,7 @@ public class SQLGameDAO implements GameDAO{
             var statement = "SELECT id FROM GameData";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 try (ResultSet rs = ps.executeQuery()) {
-                    while(rs.next()){
-                        currID += 1;
-                    }
+                    setID(rs);
                 }
             }
         } catch (Exception e) {
@@ -151,6 +149,12 @@ public class SQLGameDAO implements GameDAO{
             }
         } catch (SQLException ex) {
             throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: Unable to configure db");
+        }
+    }
+
+    private void setID(ResultSet rs) throws SQLException {
+        while(rs.next()){
+            currID += 1;
         }
     }
 }
