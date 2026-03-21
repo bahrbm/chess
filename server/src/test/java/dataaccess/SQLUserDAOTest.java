@@ -1,13 +1,10 @@
 package dataaccess;
 
+import exception.DataAccessException;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
-import service.request.RegisterRequest;
-import service.result.RegisterResult;
 
 import static org.junit.jupiter.api.Assertions.*;
 

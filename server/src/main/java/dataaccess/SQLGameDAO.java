@@ -2,12 +2,11 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import exception.DataAccessException;
 import model.GameData;
 import service.result.ImportantGameInfo;
 import java.sql.*;
 import java.util.LinkedList;
-
-import static java.sql.Types.NULL;
 
 public class SQLGameDAO implements GameDAO{
 

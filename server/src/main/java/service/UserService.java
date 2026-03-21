@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import exception.DataAccessException;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 import service.request.*;
@@ -18,7 +19,7 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException{
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
 
         String username = registerRequest.username();
         String password = registerRequest.password();

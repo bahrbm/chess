@@ -1,12 +1,8 @@
 package dataaccess;
 
+import exception.DataAccessException;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Properties;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 

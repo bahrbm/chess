@@ -1,10 +1,10 @@
 package dataaccess;
 
 import com.google.gson.Gson;
+import exception.DataAccessException;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
-import static java.sql.Types.NULL;
 
 public class SQLUserDAO implements UserDAO{
 

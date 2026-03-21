@@ -1,13 +1,12 @@
 package dataaccess;
 
 import com.google.gson.Gson;
+import exception.DataAccessException;
 import model.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static java.sql.Types.NULL;
 
 public class SQLAuthDAO implements AuthDAO{
 
