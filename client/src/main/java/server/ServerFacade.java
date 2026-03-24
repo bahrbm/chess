@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.*;
 import exception.DataAccessException;
-import exception.ResponseException;
 import service.result.*;
 import service.request.*;
 
@@ -23,10 +22,12 @@ public class ServerFacade {
         handleResponse(response, RegisterResult.class);
     }
 
-//    public LoginResult login(LoginRequest r){
-//        return null;
-//    }
-//
+    public void login(LoginRequest r) throws DataAccessException {
+        var serverRequest = buildRequest("POST","/session",r);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, LoginResult.class);
+    }
+
 //    public JoinGameResult joinGame(JoinGameRequest r){
 //        return null;
 //    }

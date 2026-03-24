@@ -3,7 +3,7 @@ package client;
 import exception.DataAccessException;
 import exception.ResponseException;
 import server.ServerFacade;
-import service.request.RegisterRequest;
+import service.request.*;
 import service.result.RegisterResult;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class GameClient {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(params);
-//                case "login" -> logIn(params);
+                case "login" -> logIn(params);
 //                case "list" -> listPets();
 //                case "join" -> signOut();
 //                case "observe" -> adoptPet(params);
@@ -102,6 +102,21 @@ public class GameClient {
             return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+    }
+
+    public String logIn(String... params) throws ResponseException, DataAccessException{
+        if (params.length >= 2) {
+            playerName = params[0];
+            String password = params[1];
+
+            LoginRequest request = new LoginRequest(playerName, password);
+            server.login(request);
+
+            System.out.printf("You signed in as %s.", playerName);
+            state = State.SIGNEDIN;
+            return "";
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD>");
     }
 
 }
