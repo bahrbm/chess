@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.*;
 import exception.DataAccessException;
+import service.result.*;
+import service.request.*;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -12,6 +14,20 @@ public class ServerFacade {
 
     public ServerFacade(String url) {
         serverUrl = url;
+    }
+
+    public RegisterResult register(String json) throws DataAccessException {
+        var request = buildRequest("POST", "/user", json);
+        var response = sendRequest(request);
+        return handleResponse(response, RegisterResult.class);
+    }
+
+    public LoginResult login(LoginRequest r){
+        return null;
+    }
+
+    public JoinGameResult joinGame(JoinGameRequest r){
+        return null;
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
