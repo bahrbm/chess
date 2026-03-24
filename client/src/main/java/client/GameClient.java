@@ -3,6 +3,8 @@ package client;
 import exception.DataAccessException;
 import exception.ResponseException;
 import server.ServerFacade;
+import service.request.RegisterRequest;
+import service.result.RegisterResult;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -52,8 +54,8 @@ public class GameClient {
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-//                case "register" -> signIn(params);
-                case "login" -> logIn(params);
+                case "register" -> register(params);
+//                case "login" -> logIn(params);
 //                case "list" -> listPets();
 //                case "join" -> signOut();
 //                case "observe" -> adoptPet(params);
@@ -61,18 +63,9 @@ public class GameClient {
                 case "quit" -> "quit";
                 default -> help();
             };
-        } catch (ResponseException ex) {
+        } catch (ResponseException | DataAccessException ex) {
             return ex.getMessage();
         }
-    }
-
-    public String logIn(String... params) throws ResponseException {
-        if (params.length >= 3) {
-            state = State.SIGNEDIN;
-            playerName = String.join("-", params);
-            return String.format("You signed in as %s.", playerName);
-        }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
     public String help() {
@@ -93,6 +86,22 @@ public class GameClient {
                    help - display list of available commands
                    quit - exit program
                 """;
+    }
+
+    public String register(String... params) throws ResponseException, DataAccessException {
+        if (params.length >= 3) {
+            playerName = params[0];
+            String password = params[1];
+            String email = params[2];
+
+            RegisterRequest request = new RegisterRequest(playerName, password, email);
+            server.register(request);
+
+            System.out.printf("You signed in as %s.", playerName);
+            state = State.SIGNEDIN;
+            return "";
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
 }

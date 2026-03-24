@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.*;
 import exception.DataAccessException;
+import exception.ResponseException;
 import service.result.*;
 import service.request.*;
 
@@ -16,19 +17,19 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public RegisterResult register(String json) throws DataAccessException {
-        var request = buildRequest("POST", "/user", json);
-        var response = sendRequest(request);
-        return handleResponse(response, RegisterResult.class);
+    public void register(RegisterRequest request) throws DataAccessException {
+        var serverRequest = buildRequest("POST", "/user", request);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, RegisterResult.class);
     }
 
-    public LoginResult login(LoginRequest r){
-        return null;
-    }
-
-    public JoinGameResult joinGame(JoinGameRequest r){
-        return null;
-    }
+//    public LoginResult login(LoginRequest r){
+//        return null;
+//    }
+//
+//    public JoinGameResult joinGame(JoinGameRequest r){
+//        return null;
+//    }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
@@ -61,7 +62,8 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw new DataAccessException(DataAccessException.ErrorCode.ServerError, "Error: Server Error");
+                System.out.print(body);
+                throw DataAccessException.fromJson(body);
             }
 
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest, "other failure: " + status);

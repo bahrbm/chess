@@ -60,6 +60,7 @@ public class Server {
     }
 
     private void addUser(Context ctx) throws DataAccessException{
+        System.out.println("Attempting to register new user");
         RegisterRequest registerRequest = new Gson().fromJson(ctx.body(), RegisterRequest.class);
         RegisterResult registerResult = userService.register(registerRequest);
         ctx.result(new Gson().toJson(registerResult));

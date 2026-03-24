@@ -1,6 +1,8 @@
 package exception;
 
 import com.google.gson.Gson;
+
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,9 +24,12 @@ public class DataAccessException extends Exception{
         this.code = code;
     }
 
-//    public DataAccessException(String message, Exception ex){
-//
-//    }
+    public static DataAccessException fromJson(String json) {
+        var map = new Gson().fromJson(json, HashMap.class);
+        var status = DataAccessException.ErrorCode.valueOf(map.get("status").toString());
+        String message = map.get("message").toString();
+        return new DataAccessException(status, message);
+    }
 
     public int toHttpStatusCode(){
         return switch(code) {
