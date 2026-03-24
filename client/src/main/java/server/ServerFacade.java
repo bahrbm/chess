@@ -16,28 +16,43 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void register(RegisterRequest request) throws DataAccessException {
+    public String register(RegisterRequest request) throws DataAccessException {
         var serverRequest = buildRequest("POST", "/user", request);
         var response = sendRequest(serverRequest);
-        handleResponse(response, RegisterResult.class);
+        RegisterResult result = handleResponse(response, RegisterResult.class);
+        return result.authToken();
     }
 
-    public void login(LoginRequest r) throws DataAccessException {
+    public String login(LoginRequest r) throws DataAccessException {
         var serverRequest = buildRequest("POST","/session",r);
         var response = sendRequest(serverRequest);
-        handleResponse(response, LoginResult.class);
+        LoginResult result = handleResponse(response, LoginResult.class);
+        return result.authToken();
+    }
+
+    public void logout(LogoutRequest r) throws DataAccessException{
+        System.out.println("Sending request to server");
+        var serverRequest = buildRequest("DELETE","/session",r);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, LogoutResult.class);
     }
 
 //    public JoinGameResult joinGame(JoinGameRequest r){
 //        return null;
 //    }
 
-    private HttpRequest buildRequest(String method, String path, Object body) {
+    private HttpRequest buildRequest(String method, String path, Object body, String... header) {
+
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
+
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+
+        if (header.length != 0){
+            request.setHeader("Authorization", header[0]);
         }
         return request.build();
     }

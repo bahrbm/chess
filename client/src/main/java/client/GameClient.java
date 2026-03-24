@@ -12,6 +12,7 @@ import static ui.EscapeSequences.*;
 
 public class GameClient {
     private String playerName = null;
+    private String authToken = null;
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
 
@@ -55,11 +56,11 @@ public class GameClient {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(params);
-                case "login" -> logIn(params);
+                case "login" -> login(params);
 //                case "list" -> listPets();
 //                case "join" -> signOut();
 //                case "observe" -> adoptPet(params);
-//                case "logout" -> adoptAllPets();
+                case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -95,7 +96,7 @@ public class GameClient {
             String email = params[2];
 
             RegisterRequest request = new RegisterRequest(playerName, password, email);
-            server.register(request);
+            authToken = server.register(request);
 
             System.out.printf("You signed in as %s.", playerName);
             state = State.SIGNEDIN;
@@ -104,19 +105,28 @@ public class GameClient {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
-    public String logIn(String... params) throws ResponseException, DataAccessException{
+    public String login(String... params) throws ResponseException, DataAccessException{
         if (params.length >= 2) {
             playerName = params[0];
             String password = params[1];
 
             LoginRequest request = new LoginRequest(playerName, password);
-            server.login(request);
+            authToken = server.login(request);
 
             System.out.printf("You signed in as %s.", playerName);
             state = State.SIGNEDIN;
             return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD>");
+    }
+
+    public String logout() throws ResponseException, DataAccessException{
+        System.out.println(authToken);
+        LogoutRequest request = new LogoutRequest(authToken);
+        server.logout(request);
+
+        state = State.SIGNEDOUT;
+        return "Successfully logged out";
     }
 
 }
