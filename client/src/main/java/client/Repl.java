@@ -59,10 +59,10 @@ public class Repl {
                 if(j == 0 || j == 9){
                     System.out.print(SET_BG_COLOR_LIGHT_GREY);
                     if(team == ChessGame.TeamColor.WHITE){
-                        System.out.printf(" %d ", 9 - i);
+                        System.out.printf(" %d ", i);
                     }
                     else{
-                        System.out.printf(" %d ", i);
+                        System.out.printf(" %d ", 9 - i);
                     }
 
                 }

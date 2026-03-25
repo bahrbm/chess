@@ -62,7 +62,7 @@ public class GameClient {
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "join" -> joinGame(params);
-//                case "observe" -> observe(params);
+                case "observe" -> observe(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
@@ -184,5 +184,20 @@ public class GameClient {
             return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID> [WHITE|BLACK]");
+    }
+
+    public String observe(String... params) throws ResponseException, DataAccessException{
+        if (params.length >= 1) {
+            ImportantGameInfo game = gameOrder.get(Integer.parseInt(params[0]));
+
+            Repl currGame = new Repl();
+            currGame.setCurrGame(game.currGame());
+            currGame.setTeam(ChessGame.TeamColor.WHITE);
+
+            currGame.run();
+
+            return "";
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID>");
     }
 }
