@@ -40,7 +40,7 @@ public class GameService {
 
         if(r.playerColor()==null){
             System.out.println("Player Color not set properly");
-            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: No player color specified");
         }
 
         if(currGame == null){
@@ -48,7 +48,7 @@ public class GameService {
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
 
-        if(Objects.equals(r.playerColor(), "BLACK")){
+        if(Objects.equals(r.playerColor(), "BLACK") || Objects.equals(r.playerColor(), "black")){
 
             if(currGame.blackUsername() != null){
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
@@ -57,7 +57,7 @@ public class GameService {
             GameData newGame = new GameData(currGame.gameID(),currGame.whiteUsername(),a.username(),currGame.gameName(), new ChessGame());
             gameDAO.updateGame(newGame);
         }
-        else if(Objects.equals(r.playerColor(), "WHITE")){
+        else if(Objects.equals(r.playerColor(), "WHITE") || Objects.equals(r.playerColor(), "white")){
 
             if(currGame.whiteUsername() != null){
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
@@ -68,7 +68,7 @@ public class GameService {
         }
         else{
             System.out.println("Invalid color");
-            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: not a valid team color");
         }
     }
 
