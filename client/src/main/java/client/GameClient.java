@@ -1,13 +1,12 @@
 package client;
 
+import chess.ChessGame;
 import exception.DataAccessException;
 import exception.ResponseException;
 import request.*;
 import result.ImportantGameInfo;
 import result.ListGamesResult;
 import server.ServerFacade;
-
-import javax.xml.crypto.Data;
 import java.util.*;
 
 import static ui.EscapeSequences.*;
@@ -17,7 +16,7 @@ public class GameClient {
     private String authToken = null;
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
-    private Map<Integer, Integer> gameOrder = new HashMap<>();
+    private Map<Integer, ImportantGameInfo> gameOrder = new HashMap<>();
 
     public GameClient(String serverUrl) throws DataAccessException{
         server = new ServerFacade(serverUrl);
@@ -63,8 +62,8 @@ public class GameClient {
                 case "login" -> login(params);
                 case "create" -> createGame(params);
                 case "list" -> listGames();
-//                case "join" -> signOut();
-//                case "observe" -> adoptPet(params);
+                case "join" -> joinGame(params);
+//                case "observe" -> observe(params);
                 case "logout" -> logout();
                 case "quit" -> "quit";
                 default -> help();
@@ -153,7 +152,7 @@ public class GameClient {
 
         int index = 1;
         for(ImportantGameInfo game : games){
-            gameOrder.put(index, game.gameID());
+            gameOrder.put(index, game);
 
             System.out.printf("%d - %s\n", index, game.gameName());
 
@@ -161,5 +160,29 @@ public class GameClient {
         }
 
         return "End of List";
+    }
+
+    public String joinGame(String... params) throws ResponseException, DataAccessException{
+        if (params.length >= 2) {
+            ImportantGameInfo game = gameOrder.get(Integer.parseInt(params[0]));
+            String team = params[1];
+
+            JoinGameRequest request = new JoinGameRequest(team, game.gameID());
+            server.joinGame(request);
+
+            Repl currGame = new Repl();
+
+            if(Objects.equals(team, "WHITE")){
+                currGame.setTeam(ChessGame.TeamColor.WHITE);
+            }
+            else{
+                currGame.setTeam(ChessGame.TeamColor.BLACK);
+            }
+
+            currGame.run();
+
+            return "";
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID> [WHITE|BLACK]");
     }
 }

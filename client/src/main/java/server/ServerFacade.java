@@ -51,9 +51,13 @@ public class ServerFacade {
         return handleResponse(response, ListGamesResult.class);
     }
 
-//    public JoinGameResult joinGame(JoinGameRequest r){
-//        return null;
-//    }
+    public void joinGame(JoinGameRequest r) throws DataAccessException {
+        var serverRequest = buildRequest("PUT","/game",r,authToken);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, JoinGameResult.class);
+
+
+    }
 
     private HttpRequest buildRequest(String method, String path, Object body, String... header) {
 
