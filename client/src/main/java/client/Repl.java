@@ -1,15 +1,18 @@
 package client;
 
-import chess.ChessGame;
+import chess.*;
+
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Repl {
     private ChessGame currGame;
     private ChessGame.TeamColor team;
+    private ChessBoard currBoard;
 
     public void setCurrGame(ChessGame currGame){
         this.currGame = currGame;
+        this.currBoard = currGame.getBoard();
     }
 
     public void setTeam(ChessGame.TeamColor team){
@@ -43,12 +46,33 @@ public class Repl {
 
             for(int j = 0; j < 10; j++){
 
+                ChessPosition currPos = new ChessPosition(i, j);
+
                 if(j == 0 || j == 9){
                     System.out.print(SET_BG_COLOR_LIGHT_GREY);
                     System.out.printf(" %d ",9-i);
                 }
                 else{
-                    System.out.print("   ");
+                    if((i + j) % 2 == 0){
+                        System.out.print(SET_BG_COLOR_WHITE);
+                    }
+                    else{
+                        System.out.print(SET_BG_COLOR_BLACK);
+                    }
+
+                    if(isBlank(currPos)){
+                        System.out.print("   ");
+                    }
+                    else if(isWhite(currPos)){
+                        System.out.print(SET_TEXT_COLOR_RED);
+                        System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                        System.out.print(RESET_TEXT_COLOR);
+                    }
+                    else{
+                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                        System.out.print(RESET_TEXT_COLOR);
+                    }
                 }
 
                 if(j == 9){
@@ -91,5 +115,13 @@ public class Repl {
     public void printBlackBorder(){
         System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
         System.out.print("    h  g  f  e  d  c  b  a    " + RESET_BG_COLOR + "\n");
+    }
+
+    private boolean isBlank(ChessPosition currPos){
+        return currBoard.getPiece(currPos) == null;
+    }
+
+    private boolean isWhite(ChessPosition currPos){
+        return currBoard.getPiece(currPos).getTeamColor() == ChessGame.TeamColor.WHITE;
     }
 }

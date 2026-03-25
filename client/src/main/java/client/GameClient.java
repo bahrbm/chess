@@ -1,8 +1,7 @@
 package client;
 
 import chess.ChessGame;
-import exception.DataAccessException;
-import exception.ResponseException;
+import exception.*;
 import request.*;
 import result.ImportantGameInfo;
 import result.ListGamesResult;
