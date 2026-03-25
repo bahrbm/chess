@@ -106,7 +106,7 @@ public class SQLGameDAO implements GameDAO{
         GameData currGame;
         for(int i = 1; i < currID + 1; i++){
             currGame = getGame(i);
-            games.add(new ImportantGameInfo(i,currGame.whiteUsername(), currGame.blackUsername(), currGame.gameName()));
+            games.add(new ImportantGameInfo(i,currGame.whiteUsername(), currGame.blackUsername(), currGame.gameName(), currGame.game()));
         }
 
         return games;

@@ -24,7 +24,7 @@ public class MemoryGameDAO implements GameDAO{
         GameData newGame = new GameData(gameID,null,null,gameName, new ChessGame());
 
         games.put(String.valueOf(gameID),newGame);
-        listOfGames.add(new ImportantGameInfo(gameID, null, null, gameName));
+        listOfGames.add(new ImportantGameInfo(gameID, null, null, gameName, newGame.game()));
 
         return newGame;
     }
@@ -40,7 +40,7 @@ public class MemoryGameDAO implements GameDAO{
 
         games.put(String.valueOf(gameID),newGame);
 
-        ImportantGameInfo gameChange = new ImportantGameInfo(gameID, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName());
+        ImportantGameInfo gameChange = new ImportantGameInfo(gameID, newGame.whiteUsername(), newGame.blackUsername(), newGame.gameName(), newGame.game());
 
         listOfGames.set(gameID-1, gameChange);
     }

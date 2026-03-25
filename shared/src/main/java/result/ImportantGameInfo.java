@@ -1,4 +1,6 @@
 package result;
 
-public record ImportantGameInfo(int gameID, String whiteUsername, String blackUsername, String gameName) {
+import chess.ChessGame;
+
+public record ImportantGameInfo(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame currGame) {
 }
