@@ -24,6 +24,7 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
         String line = "";
         while(!line.equals("quit")){
+            System.out.print(SET_TEXT_COLOR_GREEN);
             System.out.println("♕ Welcome to the game. Enter 'quit' to leave. ♕");
             if(team == ChessGame.TeamColor.WHITE){
                 printWhiteGame();
@@ -37,14 +38,14 @@ public class Repl {
     }
 
     public void printWhiteGame(){
-        for(int i = 0; i < 10; i++){
+        for(int i = 9; i > -1; i--){
 
             if(i == 0 || i == 9){
                 printWhiteBorder();
                 continue;
             }
 
-            for(int j = 9; j > -1; j--){
+            for(int j = 0; j < 10; j++){
 
                 ChessPosition currPos = new ChessPosition(i, j);
 
@@ -75,7 +76,7 @@ public class Repl {
                     }
                 }
 
-                if(j == 0){
+                if(j == 9){
                     System.out.println(RESET_BG_COLOR);
                 }
             }
