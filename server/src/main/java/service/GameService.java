@@ -4,8 +4,10 @@ import chess.ChessGame;
 import dataaccess.*;
 import exception.DataAccessException;
 import model.*;
-import service.result.*;
-import service.request.*;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import result.CreateGameResult;
+import result.ListGamesResult;
 
 import java.util.Objects;
 

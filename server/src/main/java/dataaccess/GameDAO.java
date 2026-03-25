@@ -2,7 +2,7 @@ package dataaccess;
 
 import exception.DataAccessException;
 import model.GameData;
-import service.result.ImportantGameInfo;
+import result.ImportantGameInfo;
 import java.util.LinkedList;
 
 public interface GameDAO {

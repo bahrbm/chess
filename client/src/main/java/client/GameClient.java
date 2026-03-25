@@ -2,11 +2,14 @@ package client;
 
 import exception.DataAccessException;
 import exception.ResponseException;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
 import server.ServerFacade;
-import service.request.*;
-import service.result.RegisterResult;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -15,13 +18,15 @@ public class GameClient {
     private String authToken = null;
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
+    private Map<Integer, Integer> gameOrder = new HashMap<>();
 
     public GameClient(String serverUrl) throws DataAccessException{
         server = new ServerFacade(serverUrl);
     }
 
     public void run() {
-        System.out.println("♕ Welcome to chess. Type 'help' to get started.");
+        System.out.println("♕ Welcome to chess ♕");
+        System.out.print(help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -121,7 +126,6 @@ public class GameClient {
     }
 
     public String logout() throws ResponseException, DataAccessException{
-        System.out.println(authToken);
         LogoutRequest request = new LogoutRequest(authToken);
         server.logout(request);
 

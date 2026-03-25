@@ -5,7 +5,7 @@ import exception.DataAccessException;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import service.result.ImportantGameInfo;
+import result.ImportantGameInfo;
 
 import java.util.LinkedList;
 

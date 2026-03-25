@@ -5,8 +5,12 @@ import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.*;
 import exception.DataAccessException;
-import service.result.*;
-import service.request.*;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import result.LoginResult;
+import result.LogoutResult;
+import result.RegisterResult;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -31,8 +35,7 @@ public class ServerFacade {
     }
 
     public void logout(LogoutRequest r) throws DataAccessException{
-        System.out.println("Sending request to server");
-        var serverRequest = buildRequest("DELETE","/session",r);
+        var serverRequest = buildRequest("DELETE","/session",r,r.authToken());
         var response = sendRequest(serverRequest);
         handleResponse(response, LogoutResult.class);
     }

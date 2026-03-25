@@ -5,9 +5,12 @@ import dataaccess.*;
 import exception.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
+import request.*;
+import result.CreateGameResult;
+import result.ListGamesResult;
+import result.LoginResult;
+import result.RegisterResult;
 import service.*;
-import service.request.*;
-import service.result.*;
 
 public class Server {
 

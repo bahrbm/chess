@@ -6,12 +6,12 @@ import model.AuthData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import service.request.CreateGameRequest;
-import service.request.JoinGameRequest;
-import service.request.RegisterRequest;
-import service.result.ImportantGameInfo;
-import service.result.ListGamesResult;
-import service.result.RegisterResult;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import request.RegisterRequest;
+import result.ImportantGameInfo;
+import result.ListGamesResult;
+import result.RegisterResult;
 
 import java.util.LinkedList;
 

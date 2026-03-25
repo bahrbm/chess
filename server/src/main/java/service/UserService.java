@@ -4,8 +4,12 @@ import dataaccess.*;
 import exception.DataAccessException;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
-import service.request.*;
-import service.result.*;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
+import result.LoginResult;
+import result.RegisterResult;
+
 import java.util.UUID;
 
 

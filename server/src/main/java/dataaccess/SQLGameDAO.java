@@ -4,7 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.DataAccessException;
 import model.GameData;
-import service.result.ImportantGameInfo;
+import result.ImportantGameInfo;
 import java.sql.*;
 import java.util.LinkedList;
 

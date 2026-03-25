@@ -2,7 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
-import service.result.ImportantGameInfo;
+import result.ImportantGameInfo;
 import java.util.HashMap;
 import java.util.LinkedList;
 
