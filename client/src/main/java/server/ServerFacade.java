@@ -5,16 +5,13 @@ import com.google.gson.Gson;
 import java.net.URI;
 import java.net.http.*;
 import exception.DataAccessException;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import result.LoginResult;
-import result.LogoutResult;
-import result.RegisterResult;
+import request.*;
+import result.*;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverUrl;
+    private String authToken = null;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -24,6 +21,7 @@ public class ServerFacade {
         var serverRequest = buildRequest("POST", "/user", request);
         var response = sendRequest(serverRequest);
         RegisterResult result = handleResponse(response, RegisterResult.class);
+        authToken = result.authToken();
         return result.authToken();
     }
 
@@ -31,6 +29,7 @@ public class ServerFacade {
         var serverRequest = buildRequest("POST","/session",r);
         var response = sendRequest(serverRequest);
         LoginResult result = handleResponse(response, LoginResult.class);
+        authToken = result.authToken();
         return result.authToken();
     }
 
@@ -38,6 +37,18 @@ public class ServerFacade {
         var serverRequest = buildRequest("DELETE","/session",r,r.authToken());
         var response = sendRequest(serverRequest);
         handleResponse(response, LogoutResult.class);
+    }
+
+    public void createGame(CreateGameRequest r) throws DataAccessException{
+        var serverRequest = buildRequest("POST","/game",r,authToken);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, CreateGameResult.class);
+    }
+
+    public ListGamesResult listGames(ListGamesRequest r) throws DataAccessException{
+        var serverRequest = buildRequest("POST","/game",r,authToken);
+        var response = sendRequest(serverRequest);
+        return handleResponse(response, ListGamesResult.class);
     }
 
 //    public JoinGameResult joinGame(JoinGameRequest r){

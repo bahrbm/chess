@@ -2,15 +2,14 @@ package client;
 
 import exception.DataAccessException;
 import exception.ResponseException;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
+import result.ImportantGameInfo;
+import result.ListGamesResult;
 import server.ServerFacade;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import javax.xml.crypto.Data;
+import java.util.*;
+
 import static ui.EscapeSequences.*;
 
 public class GameClient {
@@ -62,7 +61,8 @@ public class GameClient {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-//                case "list" -> listPets();
+                case "create" -> createGame(params);
+                case "list" -> listGames();
 //                case "join" -> signOut();
 //                case "observe" -> adoptPet(params);
                 case "logout" -> logout();
@@ -133,4 +133,30 @@ public class GameClient {
         return "Successfully logged out";
     }
 
+    public String createGame(String... params) throws DataAccessException, ResponseException {
+        if (params.length >= 1) {
+
+            CreateGameRequest request = new CreateGameRequest(params[0]);
+            server.createGame(request);
+
+            return "Game Successfully created";
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <NAME>");
+    }
+
+    public String listGames() throws DataAccessException{
+        ListGamesResult result = server.listGames(new ListGamesRequest());
+        LinkedList<ImportantGameInfo> games = (LinkedList<ImportantGameInfo>) result.games();
+
+        // Need to clear previous list to store most recent list
+        gameOrder.clear();
+
+        int index = 1;
+        for(ImportantGameInfo game : games){
+            gameOrder.put(index, game.gameID());
+            System.out.printf("%d - %s", index, game.gameName());
+        }
+
+        return "End of List";
+    }
 }
