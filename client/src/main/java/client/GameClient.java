@@ -99,11 +99,15 @@ public class GameClient {
             String email = params[2];
 
             RegisterRequest request = new RegisterRequest(playerName, password, email);
-            authToken = server.register(request);
+            try{
+                authToken = server.register(request);
+                state = State.SIGNEDIN;
+                return String.format("You signed in as %s.", playerName);
+            }
+            catch(DataAccessException ex){
+                return ex.getMessage();
+            }
 
-            System.out.printf("You signed in as %s.", playerName);
-            state = State.SIGNEDIN;
-            return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
@@ -114,11 +118,16 @@ public class GameClient {
             String password = params[1];
 
             LoginRequest request = new LoginRequest(playerName, password);
-            authToken = server.login(request);
 
-            System.out.printf("You signed in as %s.", playerName);
-            state = State.SIGNEDIN;
-            return "";
+            try{
+                authToken = server.login(request);
+                state = State.SIGNEDIN;
+                return String.format("You signed in as %s.", playerName);
+            }
+            catch(DataAccessException ex){
+                return ex.getMessage();
+            }
+
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <USERNAME> <PASSWORD>");
     }

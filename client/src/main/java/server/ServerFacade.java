@@ -93,8 +93,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                System.out.print(body);
-                throw DataAccessException.fromJson(body);
+                throw DataAccessException.fromResponse(status, body);
             }
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest, "other failure: " + status);
         }

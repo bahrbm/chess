@@ -24,11 +24,10 @@ public class DataAccessException extends Exception{
         this.code = code;
     }
 
-    public static DataAccessException fromJson(String json) {
+    public static DataAccessException fromResponse(int status, String json) {
         var map = new Gson().fromJson(json, HashMap.class);
-        var status = DataAccessException.ErrorCode.valueOf(map.get("status").toString());
         String message = map.get("message").toString();
-        return new DataAccessException(status, message);
+        return new DataAccessException(fromHttpStatusCode(status), message);
     }
 
     public int toHttpStatusCode(){
@@ -37,6 +36,16 @@ public class DataAccessException extends Exception{
             case Unauthorized -> 401;
             case BadRequest -> 400;
             case ServerError -> 500;
+        };
+    }
+
+    public static ErrorCode fromHttpStatusCode(int status){
+        return switch(status){
+            case 403 -> ErrorCode.AlreadyTaken;
+            case 401 -> ErrorCode.Unauthorized;
+            case 400 -> ErrorCode.BadRequest;
+            case 500 -> ErrorCode.ServerError;
+            default -> throw new IllegalStateException("Unexpected value: " + status);
         };
     }
 
