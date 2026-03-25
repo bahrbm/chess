@@ -44,7 +44,7 @@ public class Repl {
                 continue;
             }
 
-            for(int j = 0; j < 10; j++){
+            for(int j = 9; j > -1; j--){
 
                 ChessPosition currPos = new ChessPosition(i, j);
 
@@ -54,28 +54,28 @@ public class Repl {
                 }
                 else{
                     if((i + j) % 2 == 0){
-                        System.out.print(SET_BG_COLOR_WHITE);
+                        System.out.print(SET_BG_COLOR_BLACK);
                     }
                     else{
-                        System.out.print(SET_BG_COLOR_BLACK);
+                        System.out.print(SET_BG_COLOR_WHITE);
                     }
 
                     if(isBlank(currPos)){
                         System.out.print("   ");
                     }
                     else if(isWhite(currPos)){
-                        System.out.print(SET_TEXT_COLOR_RED);
+                        System.out.print(SET_TEXT_COLOR_RED + SET_TEXT_BOLD);
                         System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
-                        System.out.print(RESET_TEXT_COLOR);
+                        System.out.print(SET_TEXT_COLOR_BLACK);
                     }
                     else{
-                        System.out.print(SET_TEXT_COLOR_BLUE);
+                        System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BOLD);
                         System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
-                        System.out.print(RESET_TEXT_COLOR);
+                        System.out.print(SET_TEXT_COLOR_BLACK);
                     }
                 }
 
-                if(j == 9){
+                if(j == 0){
                     System.out.println(RESET_BG_COLOR);
                 }
             }
@@ -83,6 +83,7 @@ public class Repl {
     }
 
     public void printBlackGame(){
+
         for(int i = 0; i < 10; i++){
 
             if(i == 0 || i == 9){
@@ -90,17 +91,38 @@ public class Repl {
                 continue;
             }
 
-            for(int j = 0; j < 10; j++){
+            for(int j = 9; j > -1; j--){
+
+                ChessPosition currPos = new ChessPosition(i, j);
 
                 if(j == 0 || j == 9){
                     System.out.print(SET_BG_COLOR_LIGHT_GREY);
                     System.out.printf(" %d ",i);
                 }
                 else{
-                    System.out.print("   ");
+                    if((i + j) % 2 == 0){
+                        System.out.print(SET_BG_COLOR_BLACK);
+                    }
+                    else{
+                        System.out.print(SET_BG_COLOR_WHITE);
+                    }
+
+                    if(isBlank(currPos)){
+                        System.out.print("   ");
+                    }
+                    else if(isWhite(currPos)){
+                        System.out.print(SET_TEXT_COLOR_RED + SET_TEXT_BOLD);
+                        System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                        System.out.print(SET_TEXT_COLOR_BLACK);
+                    }
+                    else{
+                        System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BOLD);
+                        System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                        System.out.print(SET_TEXT_COLOR_BLACK);
+                    }
                 }
 
-                if(j == 9){
+                if(j == 0){
                     System.out.println(RESET_BG_COLOR);
                 }
             }
