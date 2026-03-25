@@ -46,7 +46,7 @@ public class ServerFacade {
     }
 
     public ListGamesResult listGames(ListGamesRequest r) throws DataAccessException{
-        var serverRequest = buildRequest("POST","/game",r,authToken);
+        var serverRequest = buildRequest("GET","/game",r,authToken);
         var response = sendRequest(serverRequest);
         return handleResponse(response, ListGamesResult.class);
     }

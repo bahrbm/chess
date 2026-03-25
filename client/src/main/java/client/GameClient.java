@@ -76,7 +76,7 @@ public class GameClient {
 
     public String help() {
         if (state == State.SIGNEDOUT) {
-            return """
+            return SET_TEXT_COLOR_BLUE + """
                        register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                        login <USERNAME> <PASSWORD> - to log in an existing user
                        help - display list of available commands
@@ -146,7 +146,7 @@ public class GameClient {
 
     public String listGames() throws DataAccessException{
         ListGamesResult result = server.listGames(new ListGamesRequest());
-        LinkedList<ImportantGameInfo> games = (LinkedList<ImportantGameInfo>) result.games();
+        Collection<ImportantGameInfo> games = result.games();
 
         // Need to clear previous list to store most recent list
         gameOrder.clear();
@@ -154,7 +154,10 @@ public class GameClient {
         int index = 1;
         for(ImportantGameInfo game : games){
             gameOrder.put(index, game.gameID());
-            System.out.printf("%d - %s", index, game.gameName());
+
+            System.out.printf("%d - %s\n", index, game.gameName());
+
+            index += 1;
         }
 
         return "End of List";
