@@ -171,8 +171,9 @@ public class GameClient {
             server.joinGame(request);
 
             Repl currGame = new Repl();
+            currGame.setCurrGame(game.currGame());
 
-            if(Objects.equals(team, "WHITE")){
+            if(Objects.equals(team, "white")){
                 currGame.setTeam(ChessGame.TeamColor.WHITE);
             }
             else{

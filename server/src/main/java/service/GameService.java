@@ -32,13 +32,19 @@ public class GameService {
 
     public void joinGame(JoinGameRequest r, AuthData a) throws DataAccessException{
 
+        System.out.println("Getting current Game");
+
         GameData currGame = gameDAO.getGame(r.gameID());
 
+        System.out.println("Attempting to join game");
+
         if(r.playerColor()==null){
+            System.out.println("Player Color not set properly");
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
 
         if(currGame == null){
+            System.out.println("Game is null?");
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
 
@@ -61,6 +67,7 @@ public class GameService {
             gameDAO.updateGame(newGame);
         }
         else{
+            System.out.println("Invalid color");
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: bad request");
         }
     }

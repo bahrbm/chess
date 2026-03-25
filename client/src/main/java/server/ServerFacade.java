@@ -53,10 +53,7 @@ public class ServerFacade {
 
     public void joinGame(JoinGameRequest r) throws DataAccessException {
         var serverRequest = buildRequest("PUT","/game",r,authToken);
-        var response = sendRequest(serverRequest);
-        handleResponse(response, JoinGameResult.class);
-
-
+        sendRequest(serverRequest);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body, String... header) {
@@ -99,7 +96,6 @@ public class ServerFacade {
                 System.out.print(body);
                 throw DataAccessException.fromJson(body);
             }
-
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest, "other failure: " + status);
         }
 
