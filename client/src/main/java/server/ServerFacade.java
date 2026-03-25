@@ -34,26 +34,27 @@ public class ServerFacade {
     }
 
     public void logout(LogoutRequest r) throws DataAccessException{
-        var serverRequest = buildRequest("DELETE","/session",r,r.authToken());
+        var serverRequest = buildRequest("DELETE","/session", r, r.authToken());
         var response = sendRequest(serverRequest);
         handleResponse(response, LogoutResult.class);
     }
 
     public void createGame(CreateGameRequest r) throws DataAccessException{
-        var serverRequest = buildRequest("POST","/game",r,authToken);
+        var serverRequest = buildRequest("POST","/game", r, authToken);
         var response = sendRequest(serverRequest);
         handleResponse(response, CreateGameResult.class);
     }
 
     public ListGamesResult listGames(ListGamesRequest r) throws DataAccessException{
-        var serverRequest = buildRequest("GET","/game",r,authToken);
+        var serverRequest = buildRequest("GET","/game", r, authToken);
         var response = sendRequest(serverRequest);
         return handleResponse(response, ListGamesResult.class);
     }
 
     public void joinGame(JoinGameRequest r) throws DataAccessException {
-        var serverRequest = buildRequest("PUT","/game",r,authToken);
-        sendRequest(serverRequest);
+        var serverRequest = buildRequest("PUT","/game", r, authToken);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, JoinGameResult.class);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body, String... header) {

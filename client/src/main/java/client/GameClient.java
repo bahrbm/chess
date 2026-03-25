@@ -134,10 +134,14 @@ public class GameClient {
 
     public String logout() throws ResponseException, DataAccessException{
         LogoutRequest request = new LogoutRequest(authToken);
-        server.logout(request);
 
-        state = State.SIGNEDOUT;
-        return "Successfully logged out";
+        try{
+            server.logout(request);
+            state = State.SIGNEDOUT;
+            return "Successfully logged out";
+        } catch(DataAccessException e) {
+            return e.getMessage();
+        }
     }
 
     public String createGame(String... params) throws DataAccessException, ResponseException {
@@ -175,8 +179,21 @@ public class GameClient {
             ImportantGameInfo game = gameOrder.get(Integer.parseInt(params[0]));
             String team = params[1];
 
-            JoinGameRequest request = new JoinGameRequest(team, game.gameID());
-            server.joinGame(request);
+            JoinGameRequest request = null;
+
+            try{
+                request = new JoinGameRequest(team, game.gameID());
+            }
+            catch(NullPointerException ex){
+                return "Game does not exist";
+            }
+
+            try{
+                server.joinGame(request);
+            }
+            catch(DataAccessException ex){
+                return ex.getMessage();
+            }
 
             Repl currGame = new Repl();
             currGame.setCurrGame(game.currGame());
@@ -198,6 +215,10 @@ public class GameClient {
     public String observe(String... params) throws ResponseException, DataAccessException{
         if (params.length >= 1) {
             ImportantGameInfo game = gameOrder.get(Integer.parseInt(params[0]));
+
+            if(game == null){
+                return "Game does not exist";
+            }
 
             Repl currGame = new Repl();
             currGame.setCurrGame(game.currGame());
