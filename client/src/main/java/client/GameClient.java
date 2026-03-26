@@ -166,7 +166,7 @@ public class GameClient {
         for(ImportantGameInfo game : games){
             gameOrder.put(index, game);
 
-            System.out.printf("%d - %s\n", index, game.gameName());
+            System.out.printf("%d - %s, white: %s, black: %s\n", index, game.gameName(), game.whiteUsername(), game.blackUsername());
 
             index += 1;
         }
