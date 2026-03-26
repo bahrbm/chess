@@ -103,9 +103,13 @@ public class SQLGameDAO implements GameDAO{
 
         LinkedList<ImportantGameInfo> games = new LinkedList<>();
 
+
         GameData currGame;
         for(int i = 1; i < currID + 1; i++){
             currGame = getGame(i);
+            if(currGame == null){
+                break;
+            }
             games.add(new ImportantGameInfo(i,currGame.whiteUsername(), currGame.blackUsername(), currGame.gameName(), currGame.game()));
         }
 
