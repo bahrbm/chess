@@ -11,6 +11,7 @@ import result.ListGamesResult;
 import result.LoginResult;
 import result.RegisterResult;
 import service.*;
+import websocket.WebSocketHandler;
 
 public class Server {
 
@@ -18,11 +19,13 @@ public class Server {
     private final UserService userService;
     private final ClearService clearService;
     private final GameService gameService;
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
-    private GameDAO gameDAO;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
+
+        UserDAO userDAO;
+        AuthDAO authDAO;
+        GameDAO gameDAO;
 
         try{
             userDAO = new SQLUserDAO();
@@ -40,6 +43,8 @@ public class Server {
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         gameService  = new GameService(gameDAO);
 
+        webSocketHandler = new WebSocketHandler();
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::addUser)
                 .delete("/db", this::clearDB)
@@ -49,8 +54,11 @@ public class Server {
                 .put("/game", this::joinPlayer)
                 .get("/game", this::listGames)
                 .exception(DataAccessException.class, this::exceptionHandler)
-                ;
-
+                .ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
     }
 
     public int run(int desiredPort) {
@@ -121,6 +129,4 @@ public class Server {
         ctx.status(ex.toHttpStatusCode());
         ctx.result(ex.toJson());
     }
-
-
 }

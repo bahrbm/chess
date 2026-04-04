@@ -5,20 +5,26 @@ import exception.*;
 import request.*;
 import result.ImportantGameInfo;
 import result.ListGamesResult;
+import server.NotificationHandler;
 import server.ServerFacade;
+import server.WebSocketFacade;
+import websocket.messages.ServerMessage;
+
 import java.util.*;
 
 import static ui.EscapeSequences.*;
 
-public class GameClient {
+public class GameClient implements NotificationHandler {
     private String playerName = null;
     private String authToken = null;
     private final ServerFacade server;
     private State state = State.SIGNEDOUT;
     private Map<Integer, ImportantGameInfo> gameOrder = new HashMap<>();
+    private final WebSocketFacade ws;
 
-    public GameClient(String serverUrl) throws DataAccessException{
+    public GameClient(String serverUrl) throws DataAccessException, ResponseException {
         server = new ServerFacade(serverUrl);
+        ws = new WebSocketFacade(serverUrl, this);
     }
 
     public void run() {
@@ -229,5 +235,11 @@ public class GameClient {
             return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID>");
+    }
+
+    @Override
+    public void notify(ServerMessage notification) {
+        System.out.println(SET_TEXT_COLOR_RED + notification.getServerMessage());
+        printPrompt();
     }
 }

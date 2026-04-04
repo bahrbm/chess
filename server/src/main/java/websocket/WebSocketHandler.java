@@ -39,16 +39,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void enter(String visitorName, int gameID, Session session) throws IOException {
-        connections.add(session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        connections.add(gameID, session);
+        var message = String.format("%s joined the game", visitorName);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(session, notification);
     }
 
     private void exit(String visitorName, int gameID, Session session) throws IOException {
-        var message = String.format("%s left the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        var message = String.format("%s left the game", visitorName);
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(session, notification);
-        connections.remove(session);
+        connections.remove(gameID, session);
     }
 }
