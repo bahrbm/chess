@@ -32,11 +32,7 @@ public class GameService {
 
     public void joinGame(JoinGameRequest r, AuthData a) throws DataAccessException{
 
-        System.out.println("Getting current Game");
-
         GameData currGame = gameDAO.getGame(r.gameID());
-
-        System.out.println("Attempting to join game");
 
         if(r.playerColor()==null){
             System.out.println("Player Color not set properly");
@@ -50,7 +46,7 @@ public class GameService {
 
         if(Objects.equals(r.playerColor(), "BLACK") || Objects.equals(r.playerColor(), "black")){
 
-            if(currGame.blackUsername() != null){
+            if(currGame.blackUsername() != null && !Objects.equals(a.username(), currGame.blackUsername())){
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
             }
 
@@ -59,7 +55,7 @@ public class GameService {
         }
         else if(Objects.equals(r.playerColor(), "WHITE") || Objects.equals(r.playerColor(), "white")){
 
-            if(currGame.whiteUsername() != null){
+            if(currGame.whiteUsername() != null && !Objects.equals(a.username(), currGame.whiteUsername())){
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
             }
 

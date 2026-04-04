@@ -1,7 +1,10 @@
 package client;
 
 import chess.*;
+import exception.DataAccessException;
+import exception.ResponseException;
 
+import java.util.Arrays;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
@@ -21,17 +24,51 @@ public class Repl {
 
     public void run(){
 
+        System.out.print(SET_TEXT_COLOR_GREEN);
+        System.out.println("♕ Welcome to the game. Enter 'quit' to leave. ♕");
+
         Scanner scanner = new Scanner(System.in);
-        String line = "";
-        while(!line.equals("quit")){
-            System.out.print(SET_TEXT_COLOR_GREEN);
-            System.out.println("♕ Welcome to the game. Enter 'quit' to leave. ♕");
-
+        var result = "";
+        while(!result.equals("quit")){
             printGame();
-
             System.out.print(SET_TEXT_COLOR_WHITE + " >>> ");
-            line = scanner.nextLine();
+            String line = scanner.nextLine();
+
+            try{
+                result = eval(line);
+                System.out.print(SET_TEXT_COLOR_BLUE + result);
+            } catch(Throwable e){
+                var msg = e.toString();
+                System.out.print(msg);
+            }
         }
+    }
+
+
+    public String eval(String input) {
+        try {
+            String[] tokens = input.toLowerCase().split(" ");
+            String cmd = (tokens.length > 0) ? tokens[0] : "help";
+            String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "quit" -> "quit";
+                default -> help();
+            };
+        } catch (Throwable ex) {
+            return ex.getMessage();
+        }
+    }
+
+    public String help() {
+        return SET_TEXT_COLOR_BLUE + """
+                   redraw - redraw the current game
+                   leave - leave game and allow someone else to take your place
+                   move <ROW> <COL> <ROW> <COL> - make a move
+                   resign - surrender and end the game
+                   highlight <ROW> <COL> - highlight all available moves for the current piece
+                   help - lists out all available commands
+                   quit - exit program
+                """;
     }
 
     public void printGame(){

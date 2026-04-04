@@ -189,15 +189,13 @@ public class GameClient implements NotificationHandler {
 
             try{
                 request = new JoinGameRequest(team, game.gameID());
-            }
-            catch(NullPointerException ex){
+            }catch(NullPointerException ex){
                 return "Game does not exist";
             }
 
             try{
                 server.joinGame(request);
-            }
-            catch(DataAccessException ex){
+            }catch(DataAccessException ex){
                 return ex.getMessage();
             }
 
