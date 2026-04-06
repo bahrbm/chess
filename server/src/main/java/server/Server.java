@@ -53,6 +53,7 @@ public class Server {
                 .post("/game", this::createGame)
                 .put("/game", this::joinPlayer)
                 .get("/game", this::listGames)
+                .put("/currGame", this::leaveGame)
                 .exception(DataAccessException.class, this::exceptionHandler)
                 .ws("/ws", ws -> {
                     ws.onConnect(webSocketHandler);
@@ -123,6 +124,16 @@ public class Server {
 
     private void clearDB(Context ctx) throws DataAccessException{
         clearService.clear();
+    }
+
+    private void leaveGame(Context ctx) throws DataAccessException{
+        String authToken = ctx.header("Authorization");
+
+        userService.isAuthTokenValid(authToken);
+
+        LeaveGameRequest r = new Gson().fromJson(ctx.body(), LeaveGameRequest.class);
+
+        gameService.leaveGame(r,userService.getUser(authToken));
     }
 
     private void exceptionHandler(DataAccessException ex, Context ctx){

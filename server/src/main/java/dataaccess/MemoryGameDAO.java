@@ -50,4 +50,5 @@ public class MemoryGameDAO implements GameDAO{
     public LinkedList<ImportantGameInfo> getAllGames() {
         return listOfGames;
     }
+
 }

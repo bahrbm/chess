@@ -103,7 +103,6 @@ public class SQLGameDAO implements GameDAO{
 
         LinkedList<ImportantGameInfo> games = new LinkedList<>();
 
-
         GameData currGame;
         for(int i = 1; i < currID + 1; i++){
             currGame = getGame(i);
@@ -115,6 +114,7 @@ public class SQLGameDAO implements GameDAO{
 
         return games;
     }
+
 
     private void setID(ResultSet rs) throws SQLException {
         while(rs.next()){

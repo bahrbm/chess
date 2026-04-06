@@ -4,11 +4,10 @@ import chess.ChessGame;
 import dataaccess.*;
 import exception.DataAccessException;
 import model.*;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-import result.CreateGameResult;
-import result.ListGamesResult;
+import request.*;
+import result.*;
 
+import javax.xml.crypto.Data;
 import java.util.Objects;
 
 public class GameService {
@@ -72,5 +71,26 @@ public class GameService {
         return new ListGamesResult(gameDAO.getAllGames());
     }
 
+    public void leaveGame(LeaveGameRequest r, AuthData a) throws DataAccessException {
 
+        int gameID           = r.gameID();
+        GameData currGame    = gameDAO.getGame(gameID);
+        String whiteUsername = currGame.whiteUsername();
+        String blackUsername = currGame.blackUsername();
+        String gameName      = currGame.gameName();
+        ChessGame game       = currGame.game();
+
+        if(Objects.equals(a.username(), currGame.whiteUsername())){
+            GameData newGame = new GameData(gameID, null, blackUsername, gameName, game);
+            gameDAO.updateGame(newGame);
+        }
+        else if(Objects.equals(a.username(), currGame.blackUsername())){
+            GameData newGame = new GameData(gameID, whiteUsername, null, gameName, game);
+            gameDAO.updateGame(newGame);
+        }
+        else{
+            System.out.println("Access Denied");
+            throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: Access Denied");
+        }
+    }
 }

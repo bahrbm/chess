@@ -1,9 +1,6 @@
 package client;
 
 import chess.*;
-import exception.DataAccessException;
-import exception.ResponseException;
-
 import java.util.Arrays;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
@@ -51,6 +48,7 @@ public class Repl {
             String cmd = (tokens.length > 0) ? tokens[0] : "help";
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "redraw" -> printGame();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -62,7 +60,7 @@ public class Repl {
     public String help() {
         return SET_TEXT_COLOR_BLUE + """
                    redraw - redraw the current game
-                   leave - leave game and allow someone else to take your place
+                   leave - leave game (allows someone else to take your place)
                    move <ROW> <COL> <ROW> <COL> - make a move
                    resign - surrender and end the game
                    highlight <ROW> <COL> - highlight all available moves for the current piece
@@ -71,7 +69,7 @@ public class Repl {
                 """;
     }
 
-    public void printGame(){
+    public String printGame(){
         for(int i = 9; i > -1; i--){
 
             if(i == 0 || i == 9){
@@ -131,6 +129,8 @@ public class Repl {
                 }
             }
         }
+
+        return "";
     }
 
     public void printWhiteBorder(){
