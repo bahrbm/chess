@@ -57,6 +57,12 @@ public class ServerFacade {
         handleResponse(response, JoinGameResult.class);
     }
 
+    public void leaveGame(LeaveGameRequest r) throws DataAccessException {
+        var serverRequest = buildRequest("PUT","/currGame", r, authToken);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, JoinGameResult.class);
+    }
+
     private HttpRequest buildRequest(String method, String path, Object body, String... header) {
 
         var request = HttpRequest.newBuilder()

@@ -211,6 +211,8 @@ public class GameClient implements NotificationHandler {
 
             currGame.run();
 
+            server.leaveGame(new LeaveGameRequest(game.gameID()));
+
             return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID> [WHITE|BLACK]");

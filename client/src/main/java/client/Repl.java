@@ -22,12 +22,14 @@ public class Repl {
     public void run(){
 
         System.out.print(SET_TEXT_COLOR_GREEN);
-        System.out.println("♕ Welcome to the game. Enter 'quit' to leave. ♕");
+        System.out.println("♕ Welcome to the game. Enter 'help' for a list of commands. ♕");
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while(!result.equals("quit")){
-            printGame();
+        printGame();
+
+        while(!result.equals("leave")){
+
             System.out.print(SET_TEXT_COLOR_WHITE + " >>> ");
             String line = scanner.nextLine();
 
@@ -49,7 +51,7 @@ public class Repl {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "redraw" -> printGame();
-                case "quit" -> "quit";
+                case "leave" -> "leave";
                 default -> help();
             };
         } catch (Throwable ex) {
@@ -65,7 +67,6 @@ public class Repl {
                    resign - surrender and end the game
                    highlight <ROW> <COL> - highlight all available moves for the current piece
                    help - lists out all available commands
-                   quit - exit program
                 """;
     }
 
