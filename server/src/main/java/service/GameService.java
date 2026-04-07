@@ -1,13 +1,13 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.*;
 import exception.DataAccessException;
 import model.*;
 import request.*;
 import result.*;
-
-import javax.xml.crypto.Data;
 import java.util.Objects;
 
 public class GameService {
@@ -92,5 +92,18 @@ public class GameService {
             System.out.println("Access Denied");
             throw new DataAccessException(DataAccessException.ErrorCode.BadRequest,"Error: Access Denied");
         }
+    }
+
+    public void makeMove(MakeMoveRequest r) throws DataAccessException, InvalidMoveException {
+        int gameID           = r.gameID();
+        GameData currGame    = gameDAO.getGame(gameID);
+        String whiteUsername = currGame.whiteUsername();
+        String blackUsername = currGame.blackUsername();
+        String gameName      = currGame.gameName();
+        ChessGame game       = currGame.game();
+        
+        game.makeMove(r.requestedMove());
+        GameData newGame = new GameData(gameID,whiteUsername,blackUsername,gameName,game);
+        gameDAO.updateGame(newGame);
     }
 }

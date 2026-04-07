@@ -63,6 +63,12 @@ public class ServerFacade {
         handleResponse(response, JoinGameResult.class);
     }
 
+    public void makeMove(MakeMoveRequest r) throws DataAccessException {
+        var serverRequest = buildRequest("PUT","/gameMove", r, authToken);
+        var response = sendRequest(serverRequest);
+        handleResponse(response, JoinGameResult.class);
+    }
+
     private HttpRequest buildRequest(String method, String path, Object body, String... header) {
 
         var request = HttpRequest.newBuilder()

@@ -1,19 +1,27 @@
 package client;
 
 import chess.*;
+import exception.DataAccessException;
+import request.MakeMoveRequest;
+import server.ServerFacade;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Repl {
-    private ChessGame currGame;
+    private final ChessGame currGame;
     private ChessGame.TeamColor team;
-    private ChessBoard currBoard;
+    private final ChessBoard currBoard;
+    private final ServerFacade server;
+    private int gameID;
 
-    public void setCurrGame(ChessGame currGame){
-        this.currGame = currGame;
+    public Repl(ChessGame currGame, ServerFacade server, int gameID){
+        this.currGame  = currGame;
+        this.server    = server;
         this.currBoard = currGame.getBoard();
+        this.gameID    = gameID;
     }
 
     public void setTeam(ChessGame.TeamColor team){
@@ -54,6 +62,7 @@ public class Repl {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "redraw" -> printGame();
+                case "move" -> makeMove(params);
                 case "leave" -> "leave";
                 default -> help();
             };
@@ -71,6 +80,24 @@ public class Repl {
                    highlight <ROW> <COL> - highlight all available moves for the current piece
                    help - lists out all available commands
                 """;
+    }
+
+    public String makeMove(String... params) throws InvalidMoveException, DataAccessException {
+
+        int startRow = Integer.parseInt(params[0]);
+        int startCol = Integer.parseInt(params[1]);
+        int endRow   = Integer.parseInt(params[2]);
+        int endCol   = Integer.parseInt(params[3]);
+
+        ChessMove requestedMove = new ChessMove(new ChessPosition(startRow, startCol),
+                                                new ChessPosition(endRow, endCol),
+                                   null);
+
+        currGame.makeMove(requestedMove);
+
+        server.makeMove(new MakeMoveRequest(gameID, requestedMove));
+
+        return "";
     }
 
     public String printGame(){

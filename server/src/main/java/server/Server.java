@@ -1,15 +1,13 @@
 package server;
 
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
 import exception.DataAccessException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import request.*;
-import result.CreateGameResult;
-import result.ListGamesResult;
-import result.LoginResult;
-import result.RegisterResult;
+import result.*;
 import service.*;
 import websocket.WebSocketHandler;
 
@@ -54,7 +52,9 @@ public class Server {
                 .put("/game", this::joinPlayer)
                 .get("/game", this::listGames)
                 .put("/currGame", this::leaveGame)
+                .put("/gameMove",this::makeMove)
                 .exception(DataAccessException.class, this::exceptionHandler)
+                .exception(InvalidMoveException.class, this::moveExceptionHandler)
                 .ws("/ws", ws -> {
                     ws.onConnect(webSocketHandler);
                     ws.onMessage(webSocketHandler);
@@ -136,8 +136,22 @@ public class Server {
         gameService.leaveGame(r,userService.getUser(authToken));
     }
 
+    private void makeMove(Context ctx) throws DataAccessException, InvalidMoveException {
+        String authToken = ctx.header("Authorization");
+
+        userService.isAuthTokenValid(authToken);
+
+        MakeMoveRequest r = new Gson().fromJson(ctx.body(), MakeMoveRequest.class);
+
+        gameService.makeMove(r);
+    }
+
     private void exceptionHandler(DataAccessException ex, Context ctx){
         ctx.status(ex.toHttpStatusCode());
         ctx.result(ex.toJson());
+    }
+
+    private void moveExceptionHandler(InvalidMoveException ex, Context ctx){
+        ctx.status(400);
     }
 }

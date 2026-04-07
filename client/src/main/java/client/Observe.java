@@ -3,20 +3,11 @@ package client;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPosition;
-
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
-import static ui.EscapeSequences.RESET_BG_COLOR;
-import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
-import static ui.EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
-import static ui.EscapeSequences.SET_BG_COLOR_WHITE;
-import static ui.EscapeSequences.SET_TEXT_BOLD;
-import static ui.EscapeSequences.SET_TEXT_COLOR_BLACK;
-import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
-import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 
 public class Observe {
     private ChessBoard currBoard;

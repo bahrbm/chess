@@ -199,8 +199,7 @@ public class GameClient implements NotificationHandler {
                 return ex.getMessage();
             }
 
-            Repl currGame = new Repl();
-            currGame.setCurrGame(game.currGame());
+            Repl currGame = new Repl(game.currGame(), server, game.gameID());
 
             if(Objects.equals(team, "white")){
                 currGame.setTeam(ChessGame.TeamColor.WHITE);
@@ -208,6 +207,8 @@ public class GameClient implements NotificationHandler {
             else{
                 currGame.setTeam(ChessGame.TeamColor.BLACK);
             }
+
+            ws.enterGame(game.gameID(), playerName);
 
             currGame.run();
 
