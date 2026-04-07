@@ -1,23 +1,28 @@
 package client;
 
-import chess.*;
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
-import static ui.EscapeSequences.*;
 
-public class Repl {
-    private ChessGame currGame;
-    private ChessGame.TeamColor team;
+import static ui.EscapeSequences.*;
+import static ui.EscapeSequences.RESET_BG_COLOR;
+import static ui.EscapeSequences.SET_BG_COLOR_BLACK;
+import static ui.EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
+import static ui.EscapeSequences.SET_BG_COLOR_WHITE;
+import static ui.EscapeSequences.SET_TEXT_BOLD;
+import static ui.EscapeSequences.SET_TEXT_COLOR_BLACK;
+import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
+
+public class Observe {
     private ChessBoard currBoard;
 
     public void setCurrGame(ChessGame currGame){
-        this.currGame = currGame;
         this.currBoard = currGame.getBoard();
-    }
-
-    public void setTeam(ChessGame.TeamColor team){
-        this.team = team;
     }
 
     public void run(){
@@ -66,9 +71,6 @@ public class Repl {
         return SET_TEXT_COLOR_BLUE + """
                    redraw - redraw the current game
                    leave - leave game (allows someone else to take your place)
-                   move <ROW> <COL> <ROW> <COL> - make a move
-                   resign - surrender and end the game
-                   highlight <ROW> <COL> - highlight all available moves for the current piece
                    help - lists out all available commands
                 """;
     }
@@ -77,12 +79,7 @@ public class Repl {
         for(int i = 9; i > -1; i--){
 
             if(i == 0 || i == 9){
-                if(team == ChessGame.TeamColor.WHITE){
-                    printWhiteBorder();
-                }
-                else{
-                    printBlackBorder();
-                }
+                printWhiteBorder();
                 continue;
             }
 
@@ -91,19 +88,9 @@ public class Repl {
                 // Keep for white
                 ChessPosition currPos = new ChessPosition(i, j);
 
-                if(team == ChessGame.TeamColor.BLACK){
-                    currPos.setPosition(9 - i, 9 - j);
-                }
-
                 if(j == 0 || j == 9){
                     System.out.print(SET_BG_COLOR_LIGHT_GREY);
-                    if(team == ChessGame.TeamColor.WHITE){
-                        System.out.printf(" %d ", i);
-                    }
-                    else{
-                        System.out.printf(" %d ", 9 - i);
-                    }
-
+                    System.out.printf(" %d ", i);
                 }
                 else{
                     if((i + j) % 2 == 0){
@@ -142,11 +129,6 @@ public class Repl {
         System.out.print("    a  b  c  d  e  f  g  h    " + RESET_BG_COLOR + "\n");
     }
 
-    public void printBlackBorder(){
-        System.out.print(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_COLOR_BLACK);
-        System.out.print("    h  g  f  e  d  c  b  a    " + RESET_BG_COLOR + "\n");
-    }
-
     private boolean isBlank(ChessPosition currPos){
         return currBoard.getPiece(currPos) == null;
     }
@@ -154,4 +136,5 @@ public class Repl {
     private boolean isWhite(ChessPosition currPos){
         return currBoard.getPiece(currPos).getTeamColor() == ChessGame.TeamColor.WHITE;
     }
+
 }

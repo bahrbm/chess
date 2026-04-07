@@ -226,11 +226,9 @@ public class GameClient implements NotificationHandler {
                 return "Game does not exist";
             }
 
-            Repl currGame = new Repl();
-            currGame.setCurrGame(game.currGame());
-            currGame.setTeam(ChessGame.TeamColor.WHITE);
-
-            currGame.run();
+            Observe gameToWatch = new Observe();
+            gameToWatch.setCurrGame(game.currGame());
+            gameToWatch.run();
 
             return "";
         }
