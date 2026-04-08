@@ -232,7 +232,10 @@ public class GameClient implements NotificationHandler {
     public String leaveGame() throws ResponseException, DataAccessException {
         assertInGame();
 
-        server.leaveGame(new LeaveGameRequest(gameID));
+        if(state == State.PLAYING){
+            server.leaveGame(new LeaveGameRequest(gameID));
+        }
+
         ws.leaveGame(gameID, authToken);
         gameID = -1;
         state = State.SIGNEDIN;

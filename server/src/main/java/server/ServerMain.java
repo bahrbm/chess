@@ -14,7 +14,6 @@ public class ServerMain {
             if (args.length >= 1) {
                 port = Integer.parseInt(args[0]);
             }
-
             Server server = new Server();
             server.run(port);
             System.out.printf("Server started on port %d", port);
