@@ -95,7 +95,7 @@ public class GameClient implements NotificationHandler {
                        quit - exit program
                     """;
         }
-        else if(state == State.SIGNEDIN)
+        else if(state == State.SIGNEDIN) {
             return SET_TEXT_COLOR_BLUE + """
                        create <NAME> - create a new game
                        list - display a list of all available games
@@ -105,6 +105,7 @@ public class GameClient implements NotificationHandler {
                        help - display list of available commands
                        quit - exit program
                     """;
+        }
         else{
             return SET_TEXT_COLOR_BLUE + """
                    redraw - redraw the current game
