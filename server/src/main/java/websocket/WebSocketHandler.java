@@ -1,14 +1,13 @@
 package websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
-import dataaccess.SQLUserDAO;
-import dataaccess.UserDAO;
-import exception.DataAccessException;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
+import service.GameService;
 import service.UserService;
 import websocket.commands.UserGameCommand;
-import websocket.messages.NotificationMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -16,9 +15,11 @@ import java.io.IOException;
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
     UserService userService;
+    GameService gameService;
 
-    public WebSocketHandler(UserService us){
-        this.userService = us;
+    public WebSocketHandler(UserService us, GameService gs){
+        userService = us;
+        gameService = gs;
     }
 
     private final ConnectionManager connections = new ConnectionManager();
@@ -38,9 +39,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             gameID = action.getGameID();
             String playerName = userService.getUser(action.getAuthToken()).username();
+            ChessGame currGame = gameService.getGame(gameID);
             switch (action.getCommandType()) {
-                case CONNECT -> enter(playerName, gameID, ctx.session);
-                case LEAVE -> exit(playerName, gameID, ctx.session);
+                case CONNECT -> enter(playerName, gameID, session);
+                case LEAVE -> exit(playerName, gameID, session);
 //                case MAKE_MOVE ->;
 //                case RESIGN -> ;
             }
@@ -56,6 +58,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void enter(String visitorName, int gameID, Session session) throws IOException {
         connections.add(gameID,session);
+
         var message = String.format("%s joined the game", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(gameID, session, notification);

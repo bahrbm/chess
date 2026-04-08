@@ -5,8 +5,7 @@ import exception.*;
 import request.*;
 import result.*;
 import server.*;
-import websocket.messages.ErrorMessage;
-import websocket.messages.NotificationMessage;
+import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.*;
@@ -57,7 +56,7 @@ public class GameClient implements NotificationHandler {
             System.out.print("\n" + RESET_TEXT_COLOR + "[LOGGED_IN] >>> " + SET_TEXT_COLOR_GREEN);
         }
         else{
-            System.out.print("\n" + RESET_TEXT_COLOR + "[IN_GAME] >>>" + SET_TEXT_COLOR_GREEN);
+            System.out.print("\n" + RESET_TEXT_COLOR + "[IN_GAME] >>> " + SET_TEXT_COLOR_GREEN);
         }
     }
 
@@ -220,9 +219,9 @@ public class GameClient implements NotificationHandler {
 
             ws.enterGame(game.gameID(), authToken);
 
-            state = State.INGAME;
+            printGame(gameOrder.get(gameID).currGame().getBoard());
 
-            printGame();
+            state = State.INGAME;
 
             return "";
         }
@@ -243,7 +242,8 @@ public class GameClient implements NotificationHandler {
     public String redrawBoard() throws ResponseException, DataAccessException {
         // Updates the board
         updateList();
-        printGame();
+
+        printGame(gameOrder.get(gameID).currGame().getBoard());
         return "";
     }
 
@@ -306,10 +306,9 @@ public class GameClient implements NotificationHandler {
         }
     }
 
-    public void printGame(){
+    public void printGame(ChessBoard currBoard){
 
-        ImportantGameInfo game = gameOrder.get(gameID);
-        ChessBoard currBoard = game.currGame().getBoard();
+        System.out.println("\n\n\n\n\n");
 
         for(int i = 9; i > -1; i--){
 
@@ -395,7 +394,7 @@ public class GameClient implements NotificationHandler {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(message.getMessage());
             case ERROR -> displayError(message.getMessage());
-//            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
         }
     }
 
@@ -406,6 +405,12 @@ public class GameClient implements NotificationHandler {
 
     public void displayError(String message){
         System.out.print("Error: " + message);
+        printPrompt();
+    }
+
+    public void loadGame(ChessGame game){
+        System.out.println("\n");
+        printGame(game.getBoard());
         printPrompt();
     }
 }

@@ -106,4 +106,8 @@ public class GameService {
         GameData newGame = new GameData(gameID,whiteUsername,blackUsername,gameName,game);
         gameDAO.updateGame(newGame);
     }
+
+    public ChessGame getGame(int gameID) throws DataAccessException {
+        return gameDAO.getGame(gameID).game();
+    }
 }
