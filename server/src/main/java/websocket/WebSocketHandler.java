@@ -37,12 +37,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         try {
             UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            ChessGame.TeamColor team = action.getTeam();
             gameID = action.getGameID();
             String playerName = userService.getUser(action.getAuthToken()).username();
             ChessGame currGame = gameService.getGame(gameID);
             switch (action.getCommandType()) {
-                case CONNECT -> enter(playerName, gameID, currGame, session);
-                case LEAVE -> exit(playerName, gameID, session);
+                case CONNECT -> enter(playerName, gameID, currGame, session, team);
+                case LEAVE -> exit(playerName, gameID, session, team);
 //                case MAKE_MOVE ->;
 //                case RESIGN -> ;
             }
@@ -56,17 +57,40 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void enter(String visitorName, int gameID, ChessGame currGame, Session session) throws IOException {
+    private void enter(String visitorName, int gameID, ChessGame currGame, Session session, ChessGame.TeamColor team) throws IOException {
         connections.add(gameID,session);
 
-        var message = String.format("%s joined the game", visitorName);
+        String message = "";
+
+        if(team == ChessGame.TeamColor.WHITE){
+            message = String.format("%s joined the white team", visitorName);
+        }
+        else if(team == ChessGame.TeamColor.BLACK){
+            message = String.format("%s joined the black team", visitorName);
+        }
+        else{
+            message = String.format("%s joined the game", visitorName);
+        }
+
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, currGame);
         connections.userHasJoined(gameID, session, notification, update);
     }
 
-    private void exit(String visitorName, int gameID, Session session) throws IOException {
-        var message = String.format("%s left the game", visitorName);
+    private void exit(String visitorName, int gameID, Session session, ChessGame.TeamColor team) throws IOException {
+
+        String message = "";
+
+        if(team == ChessGame.TeamColor.WHITE){
+            message = String.format("%s left the white team", visitorName);
+        }
+        else if(team == ChessGame.TeamColor.BLACK){
+            message = String.format("%s left the black team", visitorName);
+        }
+        else{
+            message = String.format("%s left the game", visitorName);
+        }
+
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(gameID, session, notification);
         connections.remove(gameID, session);

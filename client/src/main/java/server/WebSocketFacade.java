@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
@@ -55,9 +56,9 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterGame(int gameID, String authToken) throws ResponseException {
+    public void enterGame(int gameID, String authToken, ChessGame.TeamColor team) throws ResponseException {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID, team);
             String text = new Gson().toJson(command);
             this.session.getBasicRemote().sendText(text);
         } catch (IOException ex) {
@@ -65,9 +66,9 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void leaveGame(int gameID, String authToken) throws ResponseException {
+    public void leaveGame(int gameID, String authToken, ChessGame.TeamColor team) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID, team);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());

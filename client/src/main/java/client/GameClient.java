@@ -221,7 +221,7 @@ public class GameClient implements NotificationHandler {
                 return ex.getMessage();
             }
 
-            ws.enterGame(game.gameID(), authToken);
+            ws.enterGame(game.gameID(), authToken, team);
             state = State.PLAYING;
 
             return "";
@@ -234,9 +234,12 @@ public class GameClient implements NotificationHandler {
 
         if(state == State.PLAYING){
             server.leaveGame(new LeaveGameRequest(gameID));
+            ws.leaveGame(gameID, authToken, team);
+        }
+        else{
+            ws.leaveGame(gameID, authToken, null);
         }
 
-        ws.leaveGame(gameID, authToken);
         gameID = -1;
         state = State.SIGNEDIN;
 
@@ -264,7 +267,7 @@ public class GameClient implements NotificationHandler {
                 return "Game does not exist";
             }
 
-            ws.enterGame(gameID, authToken);
+            ws.enterGame(gameID, authToken, null);
             state = State.OBSERVING;
 
             return "";
