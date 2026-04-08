@@ -55,8 +55,11 @@ public class GameClient implements NotificationHandler {
         else if(state == State.SIGNEDIN){
             System.out.print("\n" + RESET_TEXT_COLOR + "[LOGGED_IN] >>> " + SET_TEXT_COLOR_GREEN);
         }
-        else{
+        else if(state == State.PLAYING){
             System.out.print("\n" + RESET_TEXT_COLOR + "[IN_GAME] >>> " + SET_TEXT_COLOR_GREEN);
+        }
+        else{
+            System.out.print("\n" + RESET_TEXT_COLOR + "[OBSERVING] >>> " + SET_TEXT_COLOR_GREEN);
         }
     }
 
@@ -218,10 +221,7 @@ public class GameClient implements NotificationHandler {
             }
 
             ws.enterGame(game.gameID(), authToken);
-
-            printGame(gameOrder.get(gameID).currGame().getBoard());
-
-            state = State.INGAME;
+            state = State.PLAYING;
 
             return "";
         }
@@ -229,7 +229,7 @@ public class GameClient implements NotificationHandler {
     }
 
     public String leaveGame() throws ResponseException, DataAccessException {
-        assertPlaying();
+        assertInGame();
 
         server.leaveGame(new LeaveGameRequest(gameID));
         ws.leaveGame(gameID, authToken);
@@ -240,6 +240,8 @@ public class GameClient implements NotificationHandler {
     }
 
     public String redrawBoard() throws ResponseException, DataAccessException {
+        assertInGame();
+
         // Updates the board
         updateList();
 
@@ -251,17 +253,15 @@ public class GameClient implements NotificationHandler {
         assertSignedIn();
 
         if (params.length >= 1) {
-            ImportantGameInfo game = gameOrder.get(Integer.parseInt(params[0]));
+            gameID = Integer.parseInt(params[0]);
+            ImportantGameInfo game = gameOrder.get(gameID);
 
             if(game == null){
                 return "Game does not exist";
             }
 
-            Observe gameToWatch = new Observe();
-            gameToWatch.setCurrGame(game.currGame());
-            gameToWatch.run();
-
             ws.enterGame(gameID, authToken);
+            state = State.OBSERVING;
 
             return "";
         }
@@ -274,9 +274,15 @@ public class GameClient implements NotificationHandler {
         }
     }
 
+    private void assertInGame() throws ResponseException{
+        if(state == State.SIGNEDIN || state == State.SIGNEDOUT){
+            throw new ResponseException(ResponseException.Code.ClientError, "You are not in a game");
+        }
+    }
+
     private void assertPlaying() throws ResponseException {
-        if(state != State.INGAME){
-            throw new ResponseException(ResponseException.Code.ClientError, "You must join a game first");
+        if(state != State.PLAYING){
+            throw new ResponseException(ResponseException.Code.ClientError, "You are not a player");
         }
     }
 

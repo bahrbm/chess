@@ -21,6 +21,23 @@ public class ConnectionManager {
         connections.get(gameID).remove(session);
     }
 
+    public void userHasJoined(int gameID, Session excludeSession, ServerMessage notification, LoadGameMessage update) throws IOException {
+        String msg = new Gson().toJson(notification);
+        String upd = new Gson().toJson(update);
+        List<Session> sessions = connections.get(gameID);
+        for (Session c : sessions){
+            if (c.isOpen()) {
+                if (!c.equals(excludeSession)) {
+                    c.getRemote().sendString(msg);
+                }
+                else{
+                    c.getRemote().sendString(upd);
+                }
+            }
+        }
+
+    }
+
     public void broadcast(int gameID, Session excludeSession, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
         List<Session> sessions = connections.get(gameID);
@@ -33,7 +50,7 @@ public class ConnectionManager {
         }
     }
 
-    public void reloadClientGame(int gameID, LoadGameMessage notification) throws IOException{
+    public void reloadAllClients(int gameID, LoadGameMessage notification) throws IOException{
         String msg = new Gson().toJson(notification);
         List<Session> sessions = connections.get(gameID);
         for (Session c : sessions) {

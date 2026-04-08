@@ -41,7 +41,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             String playerName = userService.getUser(action.getAuthToken()).username();
             ChessGame currGame = gameService.getGame(gameID);
             switch (action.getCommandType()) {
-                case CONNECT -> enter(playerName, gameID, session);
+                case CONNECT -> enter(playerName, gameID, currGame, session);
                 case LEAVE -> exit(playerName, gameID, session);
 //                case MAKE_MOVE ->;
 //                case RESIGN -> ;
@@ -56,12 +56,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    private void enter(String visitorName, int gameID, Session session) throws IOException {
+    private void enter(String visitorName, int gameID, ChessGame currGame, Session session) throws IOException {
         connections.add(gameID,session);
 
         var message = String.format("%s joined the game", visitorName);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(gameID, session, notification);
+        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, currGame);
+        connections.userHasJoined(gameID, session, notification, update);
     }
 
     private void exit(String visitorName, int gameID, Session session) throws IOException {
