@@ -5,6 +5,8 @@ import exception.*;
 import request.*;
 import result.*;
 import server.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.*;
@@ -73,6 +75,7 @@ public class GameClient implements NotificationHandler {
                 case "observe" -> observe(params);
                 case "logout" -> logout();
                 case "leave" -> leaveGame();
+                case "redraw" -> redrawBoard();
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -180,19 +183,11 @@ public class GameClient implements NotificationHandler {
 
     public String listGames() throws DataAccessException, ResponseException {
         assertSignedIn();
-
-        ListGamesResult result = server.listGames(new ListGamesRequest());
-        Collection<ImportantGameInfo> games = result.games();
-
-        // Need to clear previous list to store most recent list
-        gameOrder.clear();
+        updateList();
 
         int index = 1;
-        for(ImportantGameInfo game : games){
-            gameOrder.put(index, game);
-
+        for(ImportantGameInfo game : gameOrder.values()){
             System.out.printf("%d - %s, white: %s, black: %s\n", index, game.gameName(), game.whiteUsername(), game.blackUsername());
-
             index += 1;
         }
 
@@ -223,7 +218,7 @@ public class GameClient implements NotificationHandler {
                 return ex.getMessage();
             }
 
-            ws.enterGame(game.gameID(), playerName);
+            ws.enterGame(game.gameID(), authToken);
 
             state = State.INGAME;
 
@@ -238,9 +233,17 @@ public class GameClient implements NotificationHandler {
         assertPlaying();
 
         server.leaveGame(new LeaveGameRequest(gameID));
+        ws.leaveGame(gameID, authToken);
         gameID = -1;
         state = State.SIGNEDIN;
 
+        return "";
+    }
+
+    public String redrawBoard() throws ResponseException, DataAccessException {
+        // Updates the board
+        updateList();
+        printGame();
         return "";
     }
 
@@ -258,6 +261,8 @@ public class GameClient implements NotificationHandler {
             gameToWatch.setCurrGame(game.currGame());
             gameToWatch.run();
 
+            ws.enterGame(gameID, authToken);
+
             return "";
         }
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID>");
@@ -272,6 +277,20 @@ public class GameClient implements NotificationHandler {
     private void assertPlaying() throws ResponseException {
         if(state != State.INGAME){
             throw new ResponseException(ResponseException.Code.ClientError, "You must join a game first");
+        }
+    }
+
+    private void updateList() throws DataAccessException {
+        ListGamesResult result = server.listGames(new ListGamesRequest());
+        Collection<ImportantGameInfo> games = result.games();
+
+        gameOrder.clear();
+
+        int index = 1;
+        for(ImportantGameInfo game : games){
+            gameOrder.put(index, game);
+
+            index +=1;
         }
     }
 
@@ -372,9 +391,21 @@ public class GameClient implements NotificationHandler {
         return currBoard.getPiece(currPos).getTeamColor() == ChessGame.TeamColor.WHITE;
     }
 
-    @Override
-    public void notify(ServerMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.getServerMessage());
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
+            case NOTIFICATION -> displayNotification(message.getMessage());
+            case ERROR -> displayError(message.getMessage());
+//            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+        }
+    }
+
+    public void displayNotification(String message){
+        System.out.print(message);
+        printPrompt();
+    }
+
+    public void displayError(String message){
+        System.out.print("Error: " + message);
         printPrompt();
     }
 }

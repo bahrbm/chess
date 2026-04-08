@@ -5,6 +5,8 @@ import exception.ResponseException;
 
 import jakarta.websocket.*;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -29,9 +31,19 @@ public class WebSocketFacade extends Endpoint {
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
-                public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(notification);
+                public void onMessage(String messageString) {
+
+                    try{
+                        ServerMessage message = new Gson().fromJson(messageString, ServerMessage.class);
+                        notificationHandler.notify(message);
+                    } catch(Exception ex){
+                        notificationHandler.notify(new ServerMessage(ServerMessage.ServerMessageType.ERROR,ex.getMessage()));
+                    }
+//                    System.out.println("Test 1");
+//                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+//                    System.out.println("Test 2");
+//                    notificationHandler.notify(notification);
+//                    System.out.println("Test 3");
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -44,16 +56,17 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void enterGame(int gameID, String playerName) throws ResponseException {
+    public void enterGame(int gameID, String authToken) throws ResponseException {
         try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, playerName, gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            String text = new Gson().toJson(command);
+            this.session.getBasicRemote().sendText(text);
         } catch (IOException ex) {
             throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
         }
     }
 
-    public void leavePetShop(String authToken, int gameID) throws ResponseException {
+    public void leaveGame(int gameID, String authToken) throws ResponseException {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));

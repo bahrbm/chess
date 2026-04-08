@@ -29,6 +29,7 @@ public class Server {
             userDAO = new SQLUserDAO();
             authDAO = new SQLAuthDAO();
             gameDAO = new SQLGameDAO();
+
         }
         catch(DataAccessException e){
             System.out.println(e.getMessage());
@@ -41,7 +42,7 @@ public class Server {
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         gameService  = new GameService(gameDAO);
 
-        webSocketHandler = new WebSocketHandler();
+        webSocketHandler = new WebSocketHandler(userService);
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .post("/user", this::addUser)
