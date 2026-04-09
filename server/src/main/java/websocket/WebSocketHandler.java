@@ -117,13 +117,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String message = String.format("%s has made the move %s %d %s %d \n",playerName, translate(startPositon.getColumn()),
                 startPositon.getRow(), translate(endPosition.getColumn()), endPosition.getRow());
 
-        if(game.isInCheck(ChessGame.TeamColor.WHITE)){
-            message = message + "White is now in check";
-        }
-        else if(game.isInCheck(ChessGame.TeamColor.BLACK)){
-            message = message + "Black is now in check";
-        }
-        else if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+        if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
             message = message + "White is in Checkmate. Black has won and the game is over";
         }
         else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
@@ -132,6 +126,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         else if(game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)){
             message = message + "Stalemate. The game is over";
         }
+        else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
+            message = message + "White is now in check";
+        }
+        else if(game.isInCheck(ChessGame.TeamColor.BLACK)){
+            message = message + "Black is now in check";
+        }
+
 
         var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, game);
         connections.reloadAllClients(gameID,update);

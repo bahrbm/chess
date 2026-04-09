@@ -111,9 +111,9 @@ public class GameClient implements NotificationHandler {
             return SET_TEXT_COLOR_BLUE + """
                    redraw - redraw the current game
                    leave - leave game (allows someone else to take your place)
-                   move <ROW> <COL> <ROW> <COL> - make a move
+                   move <COL> <ROW> <COL> <ROW> - make a move
                    resign - surrender and end the game
-                   highlight <ROW> <COL> - highlight all available moves for the current piece
+                   highlight <COL> <ROW> - highlight all available moves for the current piece
                    help - lists out all available commands
                 """;
         }
