@@ -367,7 +367,7 @@ public class GameClient implements NotificationHandler {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <COL> <ROW> <COL> <ROW>");
     }
 
-    public String highlightMoves(String... params) throws ResponseException {
+    public String highlightMoves(String... params) throws ResponseException, DataAccessException {
         assertInGame();
 
         if(params.length >= 2){
@@ -375,6 +375,7 @@ public class GameClient implements NotificationHandler {
             int startCol = translateMove(params[0]);
 
             ChessPosition startPos = new ChessPosition(startRow, startCol);
+            updateList();
             ImportantGameInfo gameInfo = gameOrder.get(gameID);
             ChessGame game = gameInfo.currGame();
             Collection<ChessMove> validMoves = game.validMoves(startPos);

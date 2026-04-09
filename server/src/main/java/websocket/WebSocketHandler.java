@@ -193,7 +193,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.reloadAllClients(gameID,update);
         connections.broadcast(gameID, session, notification);
 
-        if(game.isInCheckmate(ChessGame.TeamColor.BLACK) || game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+        if(!gameState.isEmpty()){
             connections.announce(gameID,gameStateNotification);
         }
     }
