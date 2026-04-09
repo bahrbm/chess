@@ -80,7 +80,7 @@ public class GameClient implements NotificationHandler {
                 case "redraw" -> redrawBoard();
                 case "move" -> makeMove(params);
                 case "resign" -> resignPrompt();
-//                case "highlight" -> highlightMoves(params);
+                case "highlight" -> highlightMoves(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -342,6 +342,32 @@ public class GameClient implements NotificationHandler {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <COL> <ROW> <COL> <ROW>");
     }
 
+    public String highlightMoves(String... params) throws ResponseException {
+        assertInGame();
+
+        if(params.length >= 2){
+            int startRow = Integer.parseInt(params[1]);
+            int startCol = translateMove(params[0]);
+
+            ChessPosition startPos = new ChessPosition(startRow, startCol);
+            ImportantGameInfo gameInfo = gameOrder.get(gameID);
+            ChessGame game = gameInfo.currGame();
+            Collection<ChessMove> validMoves = game.validMoves(startPos);
+            Collection<ChessPosition> endPositions = new LinkedList<>();
+
+            for(ChessMove move: validMoves){
+                endPositions.add(move.getEndPosition());
+            }
+
+            printHighlightedBoard(game, endPositions, startPos);
+
+            return "";
+        }
+        else{
+            throw new ResponseException(ResponseException.Code.ClientError, "Expected: <COL> <ROW>");
+        }
+    }
+
     private void assertSignedIn() throws ResponseException {
         if(state == State.SIGNEDOUT){
             throw new ResponseException(ResponseException.Code.ClientError, "You must sign in");
@@ -473,6 +499,102 @@ public class GameClient implements NotificationHandler {
                 }
             }
         }
+
+    }
+
+    public void printHighlightedBoard(ChessGame game, Collection<ChessPosition> endPositions, ChessPosition startPos){
+
+        ChessBoard currBoard = game.getBoard();
+        System.out.println("\n\n\n\n\n");
+
+        for(int i = 9; i > -1; i--){
+
+            if(i == 0 || i == 9){
+                if(team == ChessGame.TeamColor.WHITE){
+                    printWhiteBorder();
+                }
+                else{
+                    printBlackBorder();
+                }
+                continue;
+            }
+
+            for(int j = 0; j < 10; j++){
+
+                // Keep for white
+                ChessPosition currPos = new ChessPosition(i, j);
+
+                if(team == ChessGame.TeamColor.BLACK){
+                    currPos.setPosition(9 - i, 9 - j);
+                }
+
+                if(j == 0 || j == 9){
+                    System.out.print(SET_BG_COLOR_LIGHT_GREY);
+                    if(team == ChessGame.TeamColor.WHITE){
+                        System.out.printf(" %d ", i);
+                    }
+                    else{
+                        System.out.printf(" %d ", 9 - i);
+                    }
+
+                }
+                else{
+                    if((i + j) % 2 == 0){
+                        if(Objects.equals(currPos.toString(), startPos.toString())){
+                            System.out.print(SET_BG_COLOR_YELLOW);
+                        }
+                        else if(endPositions.contains(currPos)){
+                            System.out.print(SET_BG_COLOR_DARK_GREEN);
+                        }
+                        else{
+                            System.out.print(SET_BG_COLOR_BLACK);
+                        }
+                    }
+                    else{
+                        if(Objects.equals(currPos.toString(), startPos.toString())){
+                            System.out.print(SET_BG_COLOR_YELLOW);
+                        }
+                        else if(endPositions.contains(currPos)){
+                            System.out.print(SET_BG_COLOR_GREEN);
+                        }
+                        else{
+                            System.out.print(SET_BG_COLOR_WHITE);
+                        }
+                    }
+
+                    if(isBlank(currPos, currBoard)){
+                        System.out.print("   ");
+                    }
+                    else if(isWhite(currPos, currBoard)){
+                        if(endPositions.contains(currPos) || Objects.equals(currPos.toString(), startPos.toString())){
+                            System.out.print(SET_TEXT_COLOR_BLACK + SET_TEXT_BOLD);
+                            System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                        }
+                        else{
+                            System.out.print(SET_TEXT_COLOR_RED + SET_TEXT_BOLD);
+                            System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                            System.out.print(SET_TEXT_COLOR_BLACK);
+                        }
+                    }
+                    else{
+                        if(endPositions.contains(currPos) || Objects.equals(currPos.toString(), startPos.toString())){
+                            System.out.print(SET_TEXT_COLOR_BLACK + SET_TEXT_BOLD);
+                            System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                        }
+                        else{
+                            System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BOLD);
+                            System.out.print(" " + currBoard.getPiece(currPos).toString() + " ");
+                            System.out.print(SET_TEXT_COLOR_BLACK);
+                        }
+                    }
+                }
+
+                if(j == 9){
+                    System.out.println(RESET_BG_COLOR);
+                }
+            }
+        }
+
 
     }
 
