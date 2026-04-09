@@ -120,4 +120,10 @@ public class GameService {
         GameData game = gameDAO.getGame(gameID);
         return game.blackUsername();
     }
+
+    public void finishGame(int gameID) throws DataAccessException {
+        GameData currgame = gameDAO.getGame(gameID);
+        GameData finishedGame = new GameData(gameID, "Finished", "Finished", currgame.gameName(), currgame.game());
+        gameDAO.updateGame(finishedGame);
+    }
 }

@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
+import exception.DataAccessException;
 import exception.ResponseException;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.server.Authentication;
@@ -135,7 +136,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.remove(gameID, session);
     }
 
-    private void move(String playerName, int gameID, ChessGame game, MakeMoveCommand cmd, Session session) throws IOException {
+    private void move(String playerName, int gameID, ChessGame game, MakeMoveCommand cmd, Session session) throws IOException, DataAccessException {
 
         ChessMove move = cmd.getMove();
 
@@ -149,12 +150,15 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
             gameState = "White is in Checkmate. Black has won and the game is over";
+            gameService.finishGame(gameID);
         }
         else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
             gameState = "Black is in Checkmate. White has won and the game is over";
+            gameService.finishGame(gameID);
         }
         else if(game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)){
             gameState = "Stalemate. The game is over";
+            gameService.finishGame(gameID);
         }
         else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
             gameState = "White is now in check";
@@ -174,7 +178,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException {
+    private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException, DataAccessException {
 
         String message = "";
 
@@ -184,6 +188,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         else if(team == ChessGame.TeamColor.BLACK){
             message = String.format("%s has resigned. White wins", playerName);
         }
+
+        gameService.finishGame(gameID);
 
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.announce(gameID, notification);

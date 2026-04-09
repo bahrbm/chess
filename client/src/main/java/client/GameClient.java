@@ -330,14 +330,6 @@ public class GameClient implements NotificationHandler {
             ChessPosition endPosition   = new ChessPosition(endRow, endCol);
             ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece);
 
-//            MakeMoveRequest r = new MakeMoveRequest(gameID, move);
-//
-//            try{
-//                server.makeMove(r);
-//            }catch(Exception ex){
-//                throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid Move");
-//            }
-
             ws.makeMove(gameID, authToken, team, move);
 
             updateList();
