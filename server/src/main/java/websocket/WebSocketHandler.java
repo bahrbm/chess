@@ -73,6 +73,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 gameService.makeMove(r);
             }
 
+            currGame = gameService.getGame(gameID);
+
             switch (cmd.getCommandType()) {
                 case CONNECT -> enter(playerName, gameID, currGame, session, team);
                 case LEAVE -> exit(playerName, gameID, session, team);
@@ -143,26 +145,33 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String message = String.format("%s has made the move %s %d %s %d \n",playerName, translate(startPositon.getColumn()),
                 startPositon.getRow(), translate(endPosition.getColumn()), endPosition.getRow());
 
+        String gameState = "";
+
         if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
-            message = message + "White is in Checkmate. Black has won and the game is over";
+            gameState = "White is in Checkmate. Black has won and the game is over";
         }
         else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
-            message = message + "Black is in Checkmate. White has won and the game is over";
+            gameState = "Black is in Checkmate. White has won and the game is over";
         }
         else if(game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)){
-            message = message + "Stalemate. The game is over";
+            gameState = "Stalemate. The game is over";
         }
         else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
-            message = message + "White is now in check";
+            gameState = "White is now in check";
         }
         else if(game.isInCheck(ChessGame.TeamColor.BLACK)){
-            message = message + "Black is now in check";
+            gameState = "Black is now in check";
         }
 
         var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var gameStateNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, gameState);
         connections.reloadAllClients(gameID,update);
-        connections.broadcast(gameID,session,notification);
+        connections.broadcast(gameID, session, notification);
+
+        if(game.isInCheckmate(ChessGame.TeamColor.BLACK) || game.isInCheckmate(ChessGame.TeamColor.WHITE)){
+            connections.announce(gameID,gameStateNotification);
+        }
     }
 
     private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException {
