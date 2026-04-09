@@ -5,7 +5,9 @@ import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
 import io.javalin.websocket.*;
+import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
+import request.MakeMoveRequest;
 import service.GameService;
 import service.UserService;
 import websocket.commands.MakeMoveCommand;
@@ -39,16 +41,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         Session session = ctx.session;
 
         try {
-            var action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-            ChessGame.TeamColor team = action.getTeam();
-            gameID = action.getGameID();
-            String playerName = userService.getUser(action.getAuthToken()).username();
+            UserGameCommand cmd = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+
+            if(cmd.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
+                cmd = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
+            }
+
+            ChessGame.TeamColor team = cmd.getTeam();
+            gameID = cmd.getGameID();
+            String playerName = userService.getUser(cmd.getAuthToken()).username();
             ChessGame currGame = gameService.getGame(gameID);
 
-            switch (action.getCommandType()) {
+            switch (cmd.getCommandType()) {
                 case CONNECT -> enter(playerName, gameID, currGame, session, team);
                 case LEAVE -> exit(playerName, gameID, session, team);
-                case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) action);
+                case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) cmd);
 //                case RESIGN -> ;
             }
         } catch (Exception ex) {
