@@ -5,7 +5,9 @@ import exception.*;
 import request.*;
 import result.*;
 import server.*;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.*;
@@ -227,6 +229,7 @@ public class GameClient implements NotificationHandler {
 
     public String joinGame(String... params) throws ResponseException, DataAccessException{
         assertSignedIn();
+        updateList();
 
         if (params.length >= 2) {
             gameID = Integer.parseInt(params[0]);
@@ -240,7 +243,8 @@ public class GameClient implements NotificationHandler {
             try{
                 request = new JoinGameRequest(teamColor, gameID);
             }catch(NullPointerException ex){
-                return "Game does not exist";
+                ws.enterGame(gameID, authToken, team);
+                return "";
             }
 
             try{
@@ -295,6 +299,7 @@ public class GameClient implements NotificationHandler {
                 return "Game does not exist";
             }
 
+            team = ChessGame.TeamColor.WHITE;
             ws.enterGame(gameID, authToken, null);
             state = State.OBSERVING;
 
@@ -325,13 +330,13 @@ public class GameClient implements NotificationHandler {
             ChessPosition endPosition   = new ChessPosition(endRow, endCol);
             ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece);
 
-            MakeMoveRequest r = new MakeMoveRequest(gameID, move);
-
-            try{
-                server.makeMove(r);
-            }catch(Exception ex){
-                throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid Move");
-            }
+//            MakeMoveRequest r = new MakeMoveRequest(gameID, move);
+//
+//            try{
+//                server.makeMove(r);
+//            }catch(Exception ex){
+//                throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid Move");
+//            }
 
             ws.makeMove(gameID, authToken, team, move);
 
@@ -618,13 +623,13 @@ public class GameClient implements NotificationHandler {
 
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
-            case NOTIFICATION -> displayNotification(message);
-            case ERROR -> displayError(message.getMessage());
+            case NOTIFICATION -> displayNotification(((NotificationMessage) message));
+            case ERROR -> displayError(((ErrorMessage) message).getMessage());
             case LOAD_GAME -> loadGame(((LoadGameMessage) message));
         }
     }
 
-    public void displayNotification(ServerMessage message){
+    public void displayNotification(NotificationMessage message){
 
         if(message.getMessage().contains("resigned")){
             state = State.OBSERVING;
@@ -642,19 +647,10 @@ public class GameClient implements NotificationHandler {
     public void loadGame(LoadGameMessage message) {
 
         ChessGame game = message.getGame();
-        String msg = message.getMessage();
 
         System.out.println("\n");
         printGame(game.getBoard());
+        printPrompt();
 
-
-        if(!Objects.equals(msg, "")){
-            System.out.print(SET_TEXT_COLOR_GREEN);
-            System.out.println(msg);
-            printPrompt();
-        }
-        else{
-            printPrompt();
-        }
     }
 }

@@ -110,4 +110,14 @@ public class GameService {
     public ChessGame getGame(int gameID) throws DataAccessException {
         return gameDAO.getGame(gameID).game();
     }
+
+    public String getWhiteUser(int gameID) throws DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+        return game.whiteUsername();
+    }
+
+    public String getBlackUser(int gameID) throws DataAccessException {
+        GameData game = gameDAO.getGame(gameID);
+        return game.blackUsername();
+    }
 }

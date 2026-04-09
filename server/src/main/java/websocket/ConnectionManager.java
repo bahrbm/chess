@@ -2,6 +2,7 @@ package websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
 
@@ -69,5 +70,14 @@ public class ConnectionManager {
                 c.getRemote().sendString(upd);
             }
         }
+    }
+
+    public void sendErrorMessage(int gameID, Session session, ErrorMessage message) throws IOException{
+        String upd = new Gson().toJson(message, ErrorMessage.class);
+
+        if(session.isOpen()){
+            session.getRemote().sendString(upd);
+        }
+
     }
 }

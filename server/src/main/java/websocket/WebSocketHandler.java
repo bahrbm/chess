@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import com.google.gson.Gson;
+import exception.ResponseException;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
@@ -12,10 +13,13 @@ import service.GameService;
 import service.UserService;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -43,23 +47,45 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand cmd = new Gson().fromJson(ctx.message(), UserGameCommand.class);
 
-            if(cmd.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
-                cmd = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
-            }
-
             ChessGame.TeamColor team = cmd.getTeam();
             gameID = cmd.getGameID();
             String playerName = userService.getUser(cmd.getAuthToken()).username();
             ChessGame currGame = gameService.getGame(gameID);
+            String whiteUser = gameService.getWhiteUser(gameID);
+            String blackUser = gameService.getBlackUser(gameID);
+            ChessGame.TeamColor currTurn = currGame.getTeamTurn();
+
+            if(cmd.getCommandType() == UserGameCommand.CommandType.MAKE_MOVE){
+                cmd = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
+
+                if(currTurn == ChessGame.TeamColor.WHITE){
+                    if(!Objects.equals(playerName, whiteUser)){
+                        throw new ResponseException(ResponseException.Code.ClientError, "Error: Not your turn");
+                    }
+                }
+                else{
+                    if(!Objects.equals(playerName, blackUser)){
+                        throw new ResponseException(ResponseException.Code.ClientError, "Error: Not your turn");
+                    }
+                }
+
+                MakeMoveRequest r = new MakeMoveRequest(cmd.getGameID(),((MakeMoveCommand) cmd).getMove());
+                gameService.makeMove(r);
+            }
 
             switch (cmd.getCommandType()) {
                 case CONNECT -> enter(playerName, gameID, currGame, session, team);
                 case LEAVE -> exit(playerName, gameID, session, team);
-                case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) cmd);
+                case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) cmd, session);
                 case RESIGN -> announceResign(playerName, gameID, team);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            try{
+                sendError(ex, ctx);
+            }
+            catch(IOException exception){
+                exception.printStackTrace();
+            }
         }
     }
 
@@ -83,8 +109,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = String.format("%s joined the game", visitorName);
         }
 
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, "", currGame);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, currGame);
         connections.userHasJoined(gameID, session, notification, update);
     }
 
@@ -102,12 +128,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = String.format("%s left the game", playerName);
         }
 
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(gameID, session, notification);
         connections.remove(gameID, session);
     }
 
-    private void move(String playerName, int gameID, ChessGame game, MakeMoveCommand cmd) throws IOException {
+    private void move(String playerName, int gameID, ChessGame game, MakeMoveCommand cmd, Session session) throws IOException {
 
         ChessMove move = cmd.getMove();
 
@@ -133,8 +159,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = message + "Black is now in check";
         }
 
-        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, game);
+        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.reloadAllClients(gameID,update);
+        connections.broadcast(gameID,session,notification);
     }
 
     private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException {
@@ -148,7 +176,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = String.format("%s has resigned. White wins", playerName);
         }
 
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.announce(gameID, notification);
     }
 
@@ -164,5 +192,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             case 8 -> "h";
             default -> throw new IllegalStateException("Unexpected value: " + col);
         };
+    }
+
+    private void sendError(Exception ex, WsMessageContext ctx) throws IOException {
+        var action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+        String message = "Error: " + ex.getMessage();
+        var notification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
+        connections.sendErrorMessage(action.getGameID(), ctx.session, notification);
     }
 }

@@ -10,11 +10,9 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    String message;
 
     public ServerMessage(ServerMessageType type, String message){
         this.serverMessageType = type;
-        this.message = message;
     }
 
     public enum ServerMessageType {
@@ -29,10 +27,6 @@ public class ServerMessage {
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
-    }
-
-    public String getMessage(){
-        return message;
     }
 
     @Override
