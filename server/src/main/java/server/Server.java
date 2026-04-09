@@ -30,12 +30,16 @@ public class Server {
             authDAO = new SQLAuthDAO();
             gameDAO = new SQLGameDAO();
 
+            System.out.println("Using SQL DAOs");
+
         }
         catch(DataAccessException e){
             System.out.println(e.getMessage());
             userDAO = new MemoryUserDAO();
             authDAO = new MemoryAuthDAO();
             gameDAO = new MemoryGameDAO();
+
+            System.out.println("Using Memory DAOs");
         }
 
         userService  = new UserService(userDAO, authDAO);

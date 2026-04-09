@@ -78,6 +78,7 @@ public class GameClient implements NotificationHandler {
                 case "logout" -> logout();
                 case "leave" -> leaveGame();
                 case "redraw" -> redrawBoard();
+                case "move" -> makeMove(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -275,6 +276,36 @@ public class GameClient implements NotificationHandler {
         throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ID>");
     }
 
+    public String makeMove(String... params) throws ResponseException, DataAccessException {
+        assertPlaying();
+
+        if(params.length >= 4){
+            int startRow = Integer.parseInt(params[0]);
+            int startCol = translateMove(params[1]);
+            int endRow   = Integer.parseInt(params[2]);
+            int endCol   = translateMove(params[3]);
+
+            ChessPosition startPosition = new ChessPosition(startRow, startCol);
+            ChessPosition endPosition   = new ChessPosition(endRow, endCol);
+            ChessMove move = new ChessMove(startPosition, endPosition, null);
+
+            MakeMoveRequest r = new MakeMoveRequest(gameID, move);
+
+            try{
+                server.makeMove(r);
+            }catch(DataAccessException ex){
+                return ex.getMessage();
+            }
+
+            ws.makeMove(gameID, authToken, team, move);
+
+            updateList();
+
+            return "";
+        }
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ROW> <COL> <ROW> <COL>");
+    }
+
     private void assertSignedIn() throws ResponseException {
         if(state == State.SIGNEDOUT){
             throw new ResponseException(ResponseException.Code.ClientError, "You must sign in");
@@ -291,6 +322,20 @@ public class GameClient implements NotificationHandler {
         if(state != State.PLAYING){
             throw new ResponseException(ResponseException.Code.ClientError, "You are not a player");
         }
+    }
+
+    private int translateMove(String colName){
+        return switch(colName){
+            case "a" -> 1;
+            case "b" -> 2;
+            case "c" -> 3;
+            case "d" -> 4;
+            case "e" -> 5;
+            case "f" -> 6;
+            case "g" -> 7;
+            case "h" -> 8;
+            default -> throw new IllegalStateException("Unexpected value: " + colName);
+        };
     }
 
     private void updateList() throws DataAccessException {
@@ -407,7 +452,7 @@ public class GameClient implements NotificationHandler {
         switch (message.getServerMessageType()) {
             case NOTIFICATION -> displayNotification(message.getMessage());
             case ERROR -> displayError(message.getMessage());
-            case LOAD_GAME -> loadGame(((LoadGameMessage) message).getGame());
+            case LOAD_GAME -> loadGame(((LoadGameMessage) message));
         }
     }
 
@@ -421,9 +466,18 @@ public class GameClient implements NotificationHandler {
         printPrompt();
     }
 
-    public void loadGame(ChessGame game){
+    public void loadGame(LoadGameMessage message) {
+
+        ChessGame game = message.getGame();
+        String msg = message.getMessage();
+
         System.out.println("\n");
         printGame(game.getBoard());
         printPrompt();
+
+        if(!Objects.equals(msg, "")){
+            System.out.println(msg);
+            printPrompt();
+        }
     }
 }

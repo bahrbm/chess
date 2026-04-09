@@ -1,11 +1,14 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import io.javalin.websocket.*;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import service.UserService;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.ServerMessage;
@@ -36,15 +39,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         Session session = ctx.session;
 
         try {
-            UserGameCommand action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
+            var action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             ChessGame.TeamColor team = action.getTeam();
             gameID = action.getGameID();
             String playerName = userService.getUser(action.getAuthToken()).username();
             ChessGame currGame = gameService.getGame(gameID);
+
             switch (action.getCommandType()) {
                 case CONNECT -> enter(playerName, gameID, currGame, session, team);
                 case LEAVE -> exit(playerName, gameID, session, team);
-//                case MAKE_MOVE ->;
+                case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) action);
 //                case RESIGN -> ;
             }
         } catch (Exception ex) {
@@ -73,26 +77,55 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, currGame);
+        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, "", currGame);
         connections.userHasJoined(gameID, session, notification, update);
     }
 
-    private void exit(String visitorName, int gameID, Session session, ChessGame.TeamColor team) throws IOException {
+    private void exit(String playerName, int gameID, Session session, ChessGame.TeamColor team) throws IOException {
 
         String message = "";
 
         if(team == ChessGame.TeamColor.WHITE){
-            message = String.format("%s left the white team", visitorName);
+            message = String.format("%s left the white team", playerName);
         }
         else if(team == ChessGame.TeamColor.BLACK){
-            message = String.format("%s left the black team", visitorName);
+            message = String.format("%s left the black team", playerName);
         }
         else{
-            message = String.format("%s left the game", visitorName);
+            message = String.format("%s left the game", playerName);
         }
 
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(gameID, session, notification);
         connections.remove(gameID, session);
+    }
+
+    private void move(String playerName, int gameID, ChessGame game, MakeMoveCommand cmd) throws IOException {
+
+        ChessMove move = cmd.getMove();
+
+        ChessPosition startPositon = move.getStartPosition();
+        ChessPosition endPosition  = move.getEndPosition();
+
+        String message = String.format("%s has made the move %d %s %d %s",playerName, startPositon.getRow(),
+                                        translate(startPositon.getColumn()), endPosition.getRow(),
+                                        translate(startPositon.getColumn()));
+
+        var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, game);
+        connections.reloadAllClients(gameID,update);
+    }
+
+    private String translate(int col){
+        return switch(col){
+            case 1 -> "a";
+            case 2 -> "b";
+            case 3 -> "c";
+            case 4 -> "d";
+            case 5 -> "e";
+            case 6 -> "f";
+            case 7 -> "g";
+            case 8 -> "h";
+            default -> throw new IllegalStateException("Unexpected value: " + col);
+        };
     }
 }

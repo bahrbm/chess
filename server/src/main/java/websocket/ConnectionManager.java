@@ -50,12 +50,13 @@ public class ConnectionManager {
         }
     }
 
-    public void reloadAllClients(int gameID, LoadGameMessage notification) throws IOException{
-        String msg = new Gson().toJson(notification);
+    public void reloadAllClients(int gameID, LoadGameMessage message) throws IOException{
+        String upd = new Gson().toJson(message, LoadGameMessage.class);
         List<Session> sessions = connections.get(gameID);
+
         for (Session c : sessions) {
             if (c.isOpen()) {
-                c.getRemote().sendString(msg);
+                c.getRemote().sendString(upd);
             }
         }
     }

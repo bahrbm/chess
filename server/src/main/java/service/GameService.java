@@ -49,7 +49,7 @@ public class GameService {
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
             }
 
-            GameData newGame = new GameData(currGame.gameID(),currGame.whiteUsername(),a.username(),currGame.gameName(), new ChessGame());
+            GameData newGame = new GameData(currGame.gameID(),currGame.whiteUsername(),a.username(),currGame.gameName(), currGame.game());
             gameDAO.updateGame(newGame);
         }
         else if(Objects.equals(r.playerColor(), "WHITE") || Objects.equals(r.playerColor(), "white")){
@@ -58,7 +58,7 @@ public class GameService {
                 throw new DataAccessException(DataAccessException.ErrorCode.AlreadyTaken,"Error: team taken");
             }
 
-            GameData newGame = new GameData(currGame.gameID(),a.username(),currGame.blackUsername(), currGame.gameName(), new ChessGame());
+            GameData newGame = new GameData(currGame.gameID(),a.username(),currGame.blackUsername(), currGame.gameName(), currGame.game());
             gameDAO.updateGame(newGame);
         }
         else{
