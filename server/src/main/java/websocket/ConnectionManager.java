@@ -38,6 +38,16 @@ public class ConnectionManager {
 
     }
 
+    public void announce(int gameID, ServerMessage notification) throws IOException {
+        String msg = new Gson().toJson(notification);
+        List<Session> sessions = connections.get(gameID);
+        for (Session c : sessions) {
+            if (c.isOpen()) {
+                c.getRemote().sendString(msg);
+            }
+        }
+    }
+
     public void broadcast(int gameID, Session excludeSession, ServerMessage notification) throws IOException {
         String msg = new Gson().toJson(notification);
         List<Session> sessions = connections.get(gameID);

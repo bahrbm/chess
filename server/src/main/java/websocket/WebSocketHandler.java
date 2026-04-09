@@ -56,7 +56,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> enter(playerName, gameID, currGame, session, team);
                 case LEAVE -> exit(playerName, gameID, session, team);
                 case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) cmd);
-//                case RESIGN -> ;
+                case RESIGN -> announceResign(playerName, gameID, team);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -133,9 +133,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = message + "Black is now in check";
         }
 
-
         var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, game);
         connections.reloadAllClients(gameID,update);
+    }
+
+    private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException {
+
+        String message = "";
+
+        if(team == ChessGame.TeamColor.WHITE){
+            message = String.format("%s has resigned. Black wins", playerName);
+        }
+        else if(team == ChessGame.TeamColor.BLACK){
+            message = String.format("%s has resigned. White wins", playerName);
+        }
+
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.announce(gameID, notification);
     }
 
     private String translate(int col){

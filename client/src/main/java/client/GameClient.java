@@ -79,6 +79,8 @@ public class GameClient implements NotificationHandler {
                 case "leave" -> leaveGame();
                 case "redraw" -> redrawBoard();
                 case "move" -> makeMove(params);
+                case "resign" -> resignPrompt();
+//                case "highlight" -> highlightMoves(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -117,6 +119,31 @@ public class GameClient implements NotificationHandler {
                    help - lists out all available commands
                 """;
         }
+    }
+
+    public String resignPrompt() throws ResponseException {
+        assertPlaying();
+
+        Scanner scanner = new Scanner(System.in);
+        String line = "";
+
+        while(true){
+            printPrompt();
+            System.out.println("Are you sure that you want to resign? [YES|NO]");
+            printPrompt();
+            line = scanner.nextLine();
+
+            if(Objects.equals(line, "yes") || Objects.equals(line, "no")){
+                break;
+            }
+        }
+
+        if(line.equals("yes")){
+            state = State.OBSERVING;
+            ws.playerResigned(gameID, authToken, team);
+        }
+
+        return "";
     }
 
     public String register(String... params) throws ResponseException, DataAccessException {
@@ -469,14 +496,19 @@ public class GameClient implements NotificationHandler {
 
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
-            case NOTIFICATION -> displayNotification(message.getMessage());
+            case NOTIFICATION -> displayNotification(message);
             case ERROR -> displayError(message.getMessage());
             case LOAD_GAME -> loadGame(((LoadGameMessage) message));
         }
     }
 
-    public void displayNotification(String message){
-        System.out.print(message);
+    public void displayNotification(ServerMessage message){
+
+        if(message.getMessage().contains("resigned")){
+            state = State.OBSERVING;
+        }
+
+        System.out.print(message.getMessage());
         printPrompt();
     }
 
