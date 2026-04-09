@@ -3,12 +3,15 @@ package websocket;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import exception.DataAccessException;
 import exception.ResponseException;
 import io.javalin.websocket.*;
+import model.AuthData;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
+import request.LeaveGameRequest;
 import request.MakeMoveRequest;
 import service.GameService;
 import service.UserService;
@@ -71,14 +74,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 }
 
                 MakeMoveRequest r = new MakeMoveRequest(cmd.getGameID(),((MakeMoveCommand) cmd).getMove());
-                gameService.makeMove(r);
+
+                try{
+                    gameService.makeMove(r);
+                }
+                catch(Exception ex){
+                    sendError(new Exception("Move does not remove check"), ctx);
+                    return;
+                }
             }
 
             currGame = gameService.getGame(gameID);
 
             switch (cmd.getCommandType()) {
                 case CONNECT -> enter(playerName, gameID, currGame, session, team);
-                case LEAVE -> exit(playerName, gameID, session, team);
+                case LEAVE -> exit(playerName, cmd.getAuthToken(), gameID, session, team);
                 case MAKE_MOVE -> move(playerName, gameID, currGame, (MakeMoveCommand) cmd, session);
                 case RESIGN -> announceResign(playerName, gameID, team);
             }
@@ -117,9 +127,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.userHasJoined(gameID, session, notification, update);
     }
 
-    private void exit(String playerName, int gameID, Session session, ChessGame.TeamColor team) throws IOException {
+    private void exit(String playerName, String authToken, int gameID, Session session, ChessGame.TeamColor team) throws IOException, DataAccessException {
 
         String message = "";
+        String whiteUser = gameService.getWhiteUser(gameID);
+        String blackUser = gameService.getBlackUser(gameID);
+
+        if(Objects.equals(playerName, whiteUser) || Objects.equals(playerName, blackUser)){
+            AuthData authData = new AuthData(playerName, authToken);
+            LeaveGameRequest r = new LeaveGameRequest(gameID);
+
+            gameService.leaveGame(r, authData);
+        }
+
 
         if(team == ChessGame.TeamColor.WHITE){
             message = String.format("%s left the white team", playerName);
@@ -218,7 +238,16 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void sendError(Exception ex, WsMessageContext ctx) throws IOException {
         var action = new Gson().fromJson(ctx.message(), UserGameCommand.class);
-        String message = "Error: " + ex.getMessage();
+
+        String message = "";
+
+        if(ex.getClass() == InvalidMoveException.class){
+            message = "Error: Invalid Move";
+        }
+        else{
+            message = "Error: " + ex.getMessage();
+        }
+
         var notification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, message);
         connections.sendErrorMessage(action.getGameID(), ctx.session, notification);
     }

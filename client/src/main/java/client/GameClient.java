@@ -273,7 +273,6 @@ public class GameClient implements NotificationHandler {
         assertInGame();
 
         if(state == State.PLAYING){
-            server.leaveGame(new LeaveGameRequest(gameID));
             ws.leaveGame(gameID, authToken, team);
         }
         else{
@@ -320,10 +319,21 @@ public class GameClient implements NotificationHandler {
         assertPlaying();
 
         if(params.length >= 4){
-            int startRow = Integer.parseInt(params[1]);
-            int startCol = translateMove(params[0]);
-            int endRow   = Integer.parseInt(params[3]);
-            int endCol   = translateMove(params[2]);
+
+            int startRow;
+            int startCol;
+            int endRow;
+            int endCol;
+
+            try {
+                startRow = Integer.parseInt(params[1]);
+                startCol = translateMove(params[0]);
+                endRow = Integer.parseInt(params[3]);
+                endCol = translateMove(params[2]);
+            }
+            catch(Exception ex){
+                throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid Input");
+            }
 
             ChessPiece.PieceType promotionPiece;
 
@@ -337,6 +347,16 @@ public class GameClient implements NotificationHandler {
             ChessPosition startPosition = new ChessPosition(startRow, startCol);
             ChessPosition endPosition   = new ChessPosition(endRow, endCol);
             ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece);
+
+            ChessBoard board = gameOrder.get(gameID).currGame().getBoard();
+
+
+            if (board.getPiece(startPosition) == null){
+                throw new ResponseException(ResponseException.Code.ClientError, "Error: No piece at this position");
+            }
+            else if(team != board.getPiece(startPosition).getTeamColor()){
+                throw new ResponseException(ResponseException.Code.ClientError, "Error: That isn't your piece");
+            }
 
             ws.makeMove(gameID, authToken, team, move);
 
@@ -359,6 +379,10 @@ public class GameClient implements NotificationHandler {
             ChessGame game = gameInfo.currGame();
             Collection<ChessMove> validMoves = game.validMoves(startPos);
             Collection<ChessPosition> endPositions = new LinkedList<>();
+
+            if(validMoves == null){
+                throw new ResponseException(ResponseException.Code.ClientError, "No valid moves");
+            }
 
             for(ChessMove move: validMoves){
                 endPositions.add(move.getEndPosition());
