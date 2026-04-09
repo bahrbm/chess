@@ -162,6 +162,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         ChessPosition startPositon = move.getStartPosition();
         ChessPosition endPosition  = move.getEndPosition();
+        String whiteUser = gameService.getWhiteUser(gameID);
+        String blackUser = gameService.getBlackUser(gameID);
 
         String message = String.format("%s has made the move %s %d %s %d \n",playerName, translate(startPositon.getColumn()),
                 startPositon.getRow(), translate(endPosition.getColumn()), endPosition.getRow());
@@ -169,11 +171,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String gameState = "";
 
         if(game.isInCheckmate(ChessGame.TeamColor.WHITE)){
-            gameState = "White is in Checkmate. Black has won and the game is over";
+            gameState = whiteUser + " is in Checkmate. Black has won and the game is over";
             gameService.finishGame(gameID);
         }
         else if(game.isInCheckmate(ChessGame.TeamColor.BLACK)){
-            gameState = "Black is in Checkmate. White has won and the game is over";
+            gameState = blackUser + " is in Checkmate. White has won and the game is over";
             gameService.finishGame(gameID);
         }
         else if(game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)){
@@ -181,10 +183,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameService.finishGame(gameID);
         }
         else if(game.isInCheck(ChessGame.TeamColor.WHITE)){
-            gameState = "White is now in check";
+            gameState = whiteUser + " is now in check";
         }
         else if(game.isInCheck(ChessGame.TeamColor.BLACK)){
-            gameState = "Black is now in check";
+            gameState = blackUser + " is now in check";
         }
 
         var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
