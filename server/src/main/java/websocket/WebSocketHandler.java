@@ -61,12 +61,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
                 if(currTurn == ChessGame.TeamColor.WHITE){
                     if(!Objects.equals(playerName, whiteUser)){
-                        throw new ResponseException(ResponseException.Code.ClientError, "Error: Not your turn");
+                        throw new ResponseException(ResponseException.Code.ClientError, "Not your turn");
                     }
                 }
                 else{
                     if(!Objects.equals(playerName, blackUser)){
-                        throw new ResponseException(ResponseException.Code.ClientError, "Error: Not your turn");
+                        throw new ResponseException(ResponseException.Code.ClientError, "Not your turn");
                     }
                 }
 
@@ -178,7 +178,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException, DataAccessException {
+    private void announceResign(String playerName, int gameID, ChessGame.TeamColor team) throws IOException, DataAccessException, ResponseException {
+
+        String whiteUser = gameService.getWhiteUser(gameID);
+        String blackUser = gameService.getBlackUser(gameID);
+
+        if(!Objects.equals(playerName, whiteUser) && !Objects.equals(playerName, blackUser)){
+            throw new ResponseException(ResponseException.Code.ClientError, "Error: You must join a game as a player");
+        }
 
         String message = "";
 

@@ -111,6 +111,14 @@ public class GameClient implements NotificationHandler {
                        quit - exit program
                     """;
         }
+        else if(state == State.OBSERVING){
+            return SET_TEXT_COLOR_BLUE + """
+                   redraw - redraw the current game
+                   leave - leave game (allows someone else to take your place)
+                   highlight <COL> <ROW> - highlight all available moves for the current piece
+                   help - lists out all available commands
+                """;
+        }
         else{
             return SET_TEXT_COLOR_BLUE + """
                    redraw - redraw the current game
@@ -632,7 +640,7 @@ public class GameClient implements NotificationHandler {
     }
 
     public void displayError(String message){
-        System.out.print("Error: " + message);
+        System.out.print(message);
         printPrompt();
     }
 
