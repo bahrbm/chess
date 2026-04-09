@@ -273,7 +273,7 @@ public class GameClient implements NotificationHandler {
         assertInGame();
 
         if(state == State.PLAYING){
-            server.leaveGame(new LeaveGameRequest(gameID));
+//            server.leaveGame(new LeaveGameRequest(gameID));
             ws.leaveGame(gameID, authToken, team);
         }
         else{
