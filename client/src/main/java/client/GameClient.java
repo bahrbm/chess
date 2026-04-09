@@ -280,14 +280,23 @@ public class GameClient implements NotificationHandler {
         assertPlaying();
 
         if(params.length >= 4){
-            int startRow = Integer.parseInt(params[0]);
-            int startCol = translateMove(params[1]);
-            int endRow   = Integer.parseInt(params[2]);
-            int endCol   = translateMove(params[3]);
+            int startRow = Integer.parseInt(params[1]);
+            int startCol = translateMove(params[0]);
+            int endRow   = Integer.parseInt(params[3]);
+            int endCol   = translateMove(params[2]);
+
+            ChessPiece.PieceType promotionPiece;
+
+            try{
+                promotionPiece = findPiece(params[4]);
+            }
+            catch(Exception ex){
+                promotionPiece = null;
+            }
 
             ChessPosition startPosition = new ChessPosition(startRow, startCol);
             ChessPosition endPosition   = new ChessPosition(endRow, endCol);
-            ChessMove move = new ChessMove(startPosition, endPosition, null);
+            ChessMove move = new ChessMove(startPosition, endPosition, promotionPiece);
 
             MakeMoveRequest r = new MakeMoveRequest(gameID, move);
 
@@ -303,7 +312,7 @@ public class GameClient implements NotificationHandler {
 
             return "";
         }
-        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <ROW> <COL> <ROW> <COL>");
+        throw new ResponseException(ResponseException.Code.ClientError, "Expected: <COL> <ROW> <COL> <ROW>");
     }
 
     private void assertSignedIn() throws ResponseException {
@@ -362,6 +371,16 @@ public class GameClient implements NotificationHandler {
         else{
             throw new ResponseException(ResponseException.Code.ClientError,"Invalid Team Color Chosen");
         }
+    }
+
+    private ChessPiece.PieceType findPiece(String clientPiece){
+        return switch(clientPiece){
+            case "queen"  -> ChessPiece.PieceType.QUEEN;
+            case "rook"   -> ChessPiece.PieceType.ROOK;
+            case "knight" -> ChessPiece.PieceType.KNIGHT;
+            case "bishop" -> ChessPiece.PieceType.BISHOP;
+            default -> null;
+        };
     }
 
     public void printGame(ChessBoard currBoard){
@@ -473,10 +492,14 @@ public class GameClient implements NotificationHandler {
 
         System.out.println("\n");
         printGame(game.getBoard());
-        printPrompt();
+
 
         if(!Objects.equals(msg, "")){
+            System.out.print(SET_TEXT_COLOR_GREEN);
             System.out.println(msg);
+            printPrompt();
+        }
+        else{
             printPrompt();
         }
     }

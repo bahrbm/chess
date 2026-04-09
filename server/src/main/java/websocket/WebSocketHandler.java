@@ -114,9 +114,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         ChessPosition startPositon = move.getStartPosition();
         ChessPosition endPosition  = move.getEndPosition();
 
-        String message = String.format("%s has made the move %d %s %d %s",playerName, startPositon.getRow(),
-                                        translate(startPositon.getColumn()), endPosition.getRow(),
-                                        translate(startPositon.getColumn()));
+        String message = String.format("%s has made the move %s %d %s %d ",playerName, translate(startPositon.getColumn()),
+                                        startPositon.getRow(), translate(endPosition.getColumn()), endPosition.getRow());
 
         var update = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, message, game);
         connections.reloadAllClients(gameID,update);
