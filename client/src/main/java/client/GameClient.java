@@ -290,7 +290,7 @@ public class GameClient implements NotificationHandler {
             try{
                 promotionPiece = findPiece(params[4]);
             }
-            catch(Exception ex){
+            catch(ArrayIndexOutOfBoundsException ex){
                 promotionPiece = null;
             }
 
@@ -302,8 +302,8 @@ public class GameClient implements NotificationHandler {
 
             try{
                 server.makeMove(r);
-            }catch(DataAccessException ex){
-                return ex.getMessage();
+            }catch(Exception ex){
+                throw new ResponseException(ResponseException.Code.ClientError, "Error: Invalid Move");
             }
 
             ws.makeMove(gameID, authToken, team, move);
